@@ -8,30 +8,29 @@
   @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
 
   :root {
-    --bg:       #0f0f10;
-    --bg2:      #18181b;
-    --bg3:      #222226;
-    --border:   #2e2e34;
-    --border2:  #3e3e46;
-    --text:     #e8e8ec;
-    --text2:    #9494a0;
-    --text3:    #5c5c6a;
-    --accent:   #4f8ef7;
-    --ok:       #34d399;
-    --ok-bg:    #0d2e22;
-    --warn:     #fbbf24;
-    --warn-bg:  #2a1f00;
-    --bad:      #f87171;
-    --bad-bg:   #2a0d0d;
-    --amber:    #f59e0b;
-    --mono:     'DM Mono', monospace;
-    --sans:     'DM Sans', sans-serif;
-    --r:        8px;
-    --r2:       12px;
+    --bg:      #0f0f10;
+    --bg2:     #18181b;
+    --bg3:     #222226;
+    --border:  #2e2e34;
+    --border2: #3e3e46;
+    --text:    #e8e8ec;
+    --text2:   #9494a0;
+    --text3:   #5c5c6a;
+    --accent:  #4f8ef7;
+    --ok:      #34d399;
+    --ok-bg:   #0d2e22;
+    --warn:    #fbbf24;
+    --warn-bg: #2a1f00;
+    --bad:     #f87171;
+    --bad-bg:  #2a0d0d;
+    --amber:   #f59e0b;
+    --mono:    'DM Mono', monospace;
+    --sans:    'DM Sans', sans-serif;
+    --r:       8px;
+    --r2:      12px;
   }
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   html { font-size: 16px; }
 
   body {
@@ -39,373 +38,135 @@
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
-    padding-bottom: 3rem;
+    /* push scrollable content below sticky header — set by JS */
+    padding-top: 0;
   }
 
-  /* ── Header ── */
-  header {
-    padding: 1.25rem 1rem 1rem;
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
+  /* ── Sticky header block ── */
+  #sticky-header {
+    position: fixed;
+    top: 0; left: 0; right: 0;
     background: var(--bg);
-    z-index: 100;
+    z-index: 200;
+    border-bottom: 1px solid var(--border);
+    max-width: 100%;
+  }
+
+  /* title row */
+  .hdr-title-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1rem;
+    padding: 0.55rem 1rem 0.45rem;
+    border-bottom: 1px solid var(--border);
   }
-  .header-title {
-    font-size: 0.8rem;
+  .hdr-title {
+    font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--text2);
+    color: var(--text3);
   }
-  .header-tw {
+  .hdr-tw {
     font-family: var(--mono);
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: 500;
     color: var(--ok);
     transition: color 0.2s;
     white-space: nowrap;
   }
-  .header-tw.warn { color: var(--warn); }
-  .header-tw.bad  { color: var(--bad); }
+  .hdr-tw.warn { color: var(--warn); }
+  .hdr-tw.bad  { color: var(--bad); }
 
-  /* ── Status banner ── */
+  /* status banner */
   #status-banner {
-    padding: 0.6rem 1rem;
-    font-size: 0.8rem;
+    padding: 0.35rem 1rem;
+    font-size: 0.75rem;
     font-weight: 500;
     letter-spacing: 0.02em;
     transition: background 0.2s, color 0.2s;
+    border-bottom: 1px solid var(--border);
   }
-  #status-banner.ok   { background: var(--ok-bg);   color: var(--ok); }
-  #status-banner.warn { background: var(--warn-bg);  color: var(--warn); }
-  #status-banner.bad  { background: var(--bad-bg);   color: var(--bad); }
+  #status-banner.ok   { background: var(--ok-bg);  color: var(--ok); }
+  #status-banner.warn { background: var(--warn-bg); color: var(--warn); }
+  #status-banner.bad  { background: var(--bad-bg);  color: var(--bad); }
 
-  /* ── Main layout ── */
-  main {
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 0 1rem;
-  }
-
-  /* ── Metrics strip ── */
+  /* metrics strip */
   .metrics {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
-    padding: 1rem 0;
+    gap: 0.4rem;
+    padding: 0.4rem 1rem;
     border-bottom: 1px solid var(--border);
   }
   .metric {
     background: var(--bg2);
     border: 1px solid var(--border);
     border-radius: var(--r);
-    padding: 0.75rem;
+    padding: 0.4rem 0.6rem;
   }
   .metric-label {
-    font-size: 0.68rem;
+    font-size: 0.6rem;
     color: var(--text3);
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 2px;
+    letter-spacing: 0.07em;
   }
   .metric-limit {
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     color: var(--text3);
-    margin-bottom: 4px;
+    margin-bottom: 1px;
   }
   .metric-value {
     font-family: var(--mono);
-    font-size: 1.35rem;
+    font-size: 1.15rem;
     font-weight: 500;
     color: var(--text);
     transition: color 0.2s;
+    line-height: 1.1;
   }
   .metric-value.ok   { color: var(--ok); }
   .metric-value.warn { color: var(--warn); }
   .metric-value.bad  { color: var(--bad); }
-  .metric-unit {
-    font-size: 0.65rem;
-    color: var(--text3);
-  }
+  .metric-unit { font-size: 0.6rem; color: var(--text3); }
 
-  /* ── Info strip ── */
+  /* info strip */
   .info-strip {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.72rem;
+    gap: 0.25rem 0.85rem;
+    padding: 0.35rem 1rem;
+    font-size: 0.67rem;
     color: var(--text3);
+    border-bottom: 1px solid var(--border);
   }
   .info-strip strong { color: var(--text2); font-weight: 500; }
 
-  /* ── Section ── */
-  .section {
-    padding: 1.25rem 0 0;
-  }
-  .section + .section {
-    border-top: 1px solid var(--border);
-    margin-top: 1.25rem;
-  }
-  .section-title {
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 0.75rem;
-  }
-
-  /* ── Field rows ── */
-  .field-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.5rem;
-  }
-  .field-row label {
-    font-size: 0.82rem;
-    color: var(--text2);
-    flex: 1;
-    min-width: 0;
-  }
-  .field-row input[type=number] {
-    width: 72px;
-    padding: 0.35rem 0.5rem;
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    color: var(--text);
-    text-align: right;
-    -moz-appearance: textfield;
-    flex-shrink: 0;
-  }
-  .field-row input[type=number]:focus { outline: none; border-color: var(--accent); }
-  .field-row input[type=number]::-webkit-outer-spin-button,
-  .field-row input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-  .field-unit {
-    font-size: 0.72rem;
-    color: var(--text3);
-    width: 22px;
-    flex-shrink: 0;
-  }
-
-  /* ── Car position card ── */
-  .pos-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--r2);
-    padding: 0.875rem;
-    margin-bottom: 0.75rem;
-  }
-  .pos-card-title {
-    font-size: 0.68rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--text3);
-    margin-bottom: 0.6rem;
-  }
-
-  /* ── Slider rows ── */
-  .slider-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 0.25rem;
-  }
-  .slider-row label {
-    font-size: 0.8rem;
-    color: var(--text2);
-    min-width: 150px;
-    flex-shrink: 0;
-  }
-  .slider-row input[type=range] {
-    flex: 1;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--border2);
-    outline: none;
-    cursor: pointer;
-  }
-  .slider-row input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    border: 2px solid var(--bg);
-  }
-  .slider-row input[type=range]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    border: 2px solid var(--bg);
-  }
-  .slider-val {
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    color: var(--text);
-    min-width: 38px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-  .slider-note {
-    font-size: 0.68rem;
-    color: var(--text3);
-    margin-top: 0.25rem;
-  }
-
-  /* ── Gear cards ── */
-  .gear-list { display: flex; flex-direction: column; gap: 0.5rem; }
-  .gear-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--r2);
-    padding: 0.75rem;
-    transition: border-color 0.15s, opacity 0.15s;
-  }
-  .gear-card.inactive { opacity: 0.45; }
-  .gear-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.6rem;
-  }
-  .gear-checkbox {
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    accent-color: var(--accent);
-    cursor: pointer;
-  }
-  .gear-name-input {
-    flex: 1;
-    min-width: 0;
-    font-family: var(--sans);
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text);
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: var(--r);
-    padding: 0.2rem 0.4rem;
-    transition: border-color 0.15s, background 0.15s;
-  }
-  .gear-name-input:hover { border-color: var(--border2); }
-  .gear-name-input:focus { border-color: var(--accent); background: var(--bg3); outline: none; }
-  .gear-wt-row {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    flex-shrink: 0;
-  }
-  .gear-wt-row input[type=number] {
-    width: 60px;
-    padding: 0.25rem 0.4rem;
-    font-family: var(--mono);
-    font-size: 0.82rem;
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    color: var(--text);
-    text-align: right;
-    -moz-appearance: textfield;
-  }
-  .gear-wt-row input[type=number]:focus { outline: none; border-color: var(--accent); }
-  .gear-wt-row input[type=number]::-webkit-outer-spin-button,
-  .gear-wt-row input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-  .gear-wt-unit { font-size: 0.7rem; color: var(--text3); }
-  .gear-slider-row {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-  }
-  .gear-slider-label {
-    font-size: 0.7rem;
-    color: var(--text3);
-    min-width: 110px;
-    flex-shrink: 0;
-  }
-  .gear-slider-row input[type=range] {
-    flex: 1;
-    -webkit-appearance: none;
-    appearance: none;
-    height: 3px;
-    border-radius: 2px;
-    background: var(--border2);
-    outline: none;
-    cursor: pointer;
-  }
-  .gear-slider-row input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--amber);
-    cursor: pointer;
-    border: 2px solid var(--bg);
-  }
-  .gear-slider-row input[type=range]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: var(--amber);
-    cursor: pointer;
-    border: 2px solid var(--bg);
-  }
-  .gear-slider-val {
-    font-family: var(--mono);
-    font-size: 0.75rem;
-    color: var(--text2);
-    min-width: 36px;
-    text-align: right;
-    flex-shrink: 0;
-  }
-
-  /* ── Diagram ── */
+  /* diagram */
   .diagram-wrap {
-    border: 1px solid var(--border);
-    border-radius: var(--r2);
-    overflow: hidden;
-    margin-top: 0.75rem;
-    background: var(--bg2);
+    padding: 0 1rem 0.4rem;
+    background: var(--bg);
   }
 
-  /* ── Save indicator ── */
-  #save-indicator {
-    font-size: 0.65rem;
-    color: var(--text3);
-    text-align: center;
-    padding: 0.5rem 0 0;
-    opacity: 0;
-    transition: opacity 0.4s;
+  /* ── Scrollable content ── */
+  #scroll-body {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 1rem 3rem;
   }
-  #save-indicator.show { opacity: 1; }
 
-  /* ── Tabs for sections on mobile ── */
+  /* tabs */
   .tabs {
     display: flex;
-    gap: 0;
     border-bottom: 1px solid var(--border);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    position: sticky;
+    background: var(--bg);
+    z-index: 10;
   }
   .tabs::-webkit-scrollbar { display: none; }
+  /* tabs top offset set by JS to sit just below sticky header */
   .tab-btn {
     font-family: var(--sans);
     font-size: 0.75rem;
@@ -414,31 +175,136 @@
     background: none;
     border: none;
     border-bottom: 2px solid transparent;
-    padding: 0.75rem 1rem;
+    padding: 0.65rem 1.1rem;
     cursor: pointer;
     white-space: nowrap;
     transition: color 0.15s, border-color 0.15s;
     letter-spacing: 0.04em;
   }
-  .tab-btn.active {
-    color: var(--accent);
-    border-bottom-color: var(--accent);
-  }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
+
+  /* sections */
+  .section { padding: 1rem 0 0; }
+  .section + .section { border-top: 1px solid var(--border); margin-top: 1rem; }
+  .section-title {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.65rem;
+  }
+
+  /* field rows */
+  .field-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.45rem;
+  }
+  .field-row label { font-size: 0.82rem; color: var(--text2); flex: 1; min-width: 0; }
+  .field-row input[type=number] {
+    width: 72px; padding: 0.32rem 0.5rem;
+    font-family: var(--mono); font-size: 0.82rem;
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r); color: var(--text);
+    text-align: right; -moz-appearance: textfield; flex-shrink: 0;
+  }
+  .field-row input[type=number]:focus { outline: none; border-color: var(--accent); }
+  .field-row input[type=number]::-webkit-outer-spin-button,
+  .field-row input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .field-unit { font-size: 0.7rem; color: var(--text3); width: 22px; flex-shrink: 0; }
+
+  /* car position card */
+  .pos-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 0.75rem; margin-bottom: 0.75rem;
+  }
+  .pos-card-title {
+    font-size: 0.65rem; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text3); margin-bottom: 0.5rem;
+  }
+
+  /* sliders */
+  .slider-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.2rem; }
+  .slider-row label { font-size: 0.78rem; color: var(--text2); min-width: 140px; flex-shrink: 0; }
+  .slider-row input[type=range] {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 4px; border-radius: 2px; background: var(--border2); outline: none; cursor: pointer;
+  }
+  .slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px;
+    border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid var(--bg);
+  }
+  .slider-row input[type=range]::-moz-range-thumb {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: 2px solid var(--bg);
+  }
+  .slider-val { font-family: var(--mono); font-size: 0.8rem; color: var(--text); min-width: 38px; text-align: right; flex-shrink: 0; }
+  .slider-note { font-size: 0.65rem; color: var(--text3); margin-top: 0.2rem; }
+
+  /* gear cards */
+  .gear-list { display: flex; flex-direction: column; gap: 0.45rem; }
+  .gear-card {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--r2); padding: 0.65rem; transition: opacity 0.15s;
+  }
+  .gear-card.inactive { opacity: 0.4; }
+  .gear-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+  .gear-checkbox { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--accent); cursor: pointer; }
+  .gear-name-input {
+    flex: 1; min-width: 0; font-family: var(--sans); font-size: 0.83rem;
+    font-weight: 500; color: var(--text); background: transparent;
+    border: 1px solid transparent; border-radius: var(--r); padding: 0.18rem 0.35rem;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .gear-name-input:hover { border-color: var(--border2); }
+  .gear-name-input:focus { border-color: var(--accent); background: var(--bg3); outline: none; }
+  .gear-wt-row { display: flex; align-items: center; gap: 0.3rem; flex-shrink: 0; }
+  .gear-wt-row input[type=number] {
+    width: 58px; padding: 0.22rem 0.4rem; font-family: var(--mono); font-size: 0.8rem;
+    background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r);
+    color: var(--text); text-align: right; -moz-appearance: textfield;
+  }
+  .gear-wt-row input[type=number]:focus { outline: none; border-color: var(--accent); }
+  .gear-wt-row input[type=number]::-webkit-outer-spin-button,
+  .gear-wt-row input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  .gear-wt-unit { font-size: 0.68rem; color: var(--text3); }
+  .gear-slider-row { display: flex; align-items: center; gap: 0.55rem; }
+  .gear-slider-label { font-size: 0.68rem; color: var(--text3); min-width: 105px; flex-shrink: 0; }
+  .gear-slider-row input[type=range] {
+    flex: 1; -webkit-appearance: none; appearance: none;
+    height: 3px; border-radius: 2px; background: var(--border2); outline: none; cursor: pointer;
+  }
+  .gear-slider-row input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--amber); cursor: pointer; border: 2px solid var(--bg);
+  }
+  .gear-slider-row input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--amber); cursor: pointer; border: 2px solid var(--bg);
+  }
+  .gear-slider-val { font-family: var(--mono); font-size: 0.73rem; color: var(--text2); min-width: 34px; text-align: right; flex-shrink: 0; }
+
+  /* save indicator */
+  #save-indicator {
+    font-size: 0.62rem; color: var(--text3); text-align: center;
+    padding: 0.4rem 0 0; opacity: 0; transition: opacity 0.4s;
+  }
+  #save-indicator.show { opacity: 1; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-title">Tongue Weight Calc</div>
-  <div class="header-tw" id="header-tw">— lb TW</div>
-</header>
-
-<div id="status-banner" class="ok">Loading…</div>
-
-<main>
-
+<!-- ── Sticky header ── -->
+<div id="sticky-header">
+  <div class="hdr-title-row">
+    <span class="hdr-title">Tongue Weight Calc</span>
+    <span class="hdr-tw" id="header-tw">— lb TW</span>
+  </div>
+  <div id="status-banner" class="ok">Loading…</div>
   <div class="metrics">
     <div class="metric">
       <div class="metric-label">Tongue weight</div>
@@ -459,11 +325,9 @@
       <div class="metric-unit">lbs</div>
     </div>
   </div>
-
   <div class="info-strip" id="info-strip"></div>
-
   <div class="diagram-wrap">
-    <svg id="svg" width="100%" viewBox="0 0 680 180" role="img">
+    <svg id="svg" width="100%" viewBox="0 0 680 155" role="img">
       <title>Trailer load diagram</title>
       <desc>Side-view schematic showing car and gear positions relative to axle midpoint and tongue weight</desc>
       <defs>
@@ -473,30 +337,30 @@
       </defs>
     </svg>
   </div>
+</div>
 
-  <!-- Tabs -->
-  <div class="tabs" style="margin-top:1rem">
-    <button class="tab-btn active" onclick="showTab('car')">Car</button>
-    <button class="tab-btn" onclick="showTab('trailer')">Trailer</button>
-    <button class="tab-btn" onclick="showTab('gear')">Gear</button>
+<!-- ── Scrollable body ── -->
+<div id="scroll-body">
+
+  <div class="tabs" id="tabs">
+    <button class="tab-btn active" onclick="showTab('car',this)">Car</button>
+    <button class="tab-btn" onclick="showTab('trailer',this)">Trailer</button>
+    <button class="tab-btn" onclick="showTab('gear',this)">Gear</button>
   </div>
 
   <!-- CAR TAB -->
   <div class="tab-panel active" id="tab-car">
-
     <div class="section">
       <div class="section-title">Race car weights</div>
       <div class="field-row"><label>Front axle weight</label><input type="number" id="carFrontWt" value="1980" step="5"><span class="field-unit">lbs</span></div>
       <div class="field-row"><label>Rear axle weight</label><input type="number" id="carRearWt" value="1217" step="5"><span class="field-unit">lbs</span></div>
     </div>
-
     <div class="section">
       <div class="section-title">Race car dimensions</div>
       <div class="field-row"><label>Wheelbase</label><input type="number" id="wheelbase" value="103.5" step="0.5"><span class="field-unit">in</span></div>
       <div class="field-row"><label>Nose overhang (nose → front axle)</label><input type="number" id="noseOvr" value="39" step="0.5"><span class="field-unit">in</span></div>
       <div class="field-row"><label>Tail overhang (rear axle → tail)</label><input type="number" id="tailOvr" value="38" step="0.5"><span class="field-unit">in</span></div>
     </div>
-
     <div class="section">
       <div class="pos-card">
         <div class="pos-card-title">Car position — nose from front of box</div>
@@ -508,7 +372,6 @@
         <div class="slider-note">0 = nose against front wall · auto-clamps to keep car inside box</div>
       </div>
     </div>
-
   </div>
 
   <!-- TRAILER TAB -->
@@ -526,15 +389,14 @@
   <!-- GEAR TAB -->
   <div class="tab-panel" id="tab-gear">
     <div class="section">
-      <div class="section-title" style="margin-bottom:0.25rem">Gear items</div>
-      <div class="slider-note" style="margin-bottom:0.75rem">Check to include · tap name to edit · set weight · drag slider to place from front of box</div>
+      <div class="section-title" style="margin-bottom:0.2rem">Gear items</div>
+      <div class="slider-note" style="margin-bottom:0.65rem">Check to include · tap name to edit · set weight · drag slider to place from front of box</div>
       <div class="gear-list" id="gear-list"></div>
     </div>
   </div>
 
   <div id="save-indicator">Saved</div>
-
-</main>
+</div>
 
 <script>
 const LIMIT = 600, WARN = 540, GTW_LIMIT = 7715;
@@ -559,40 +421,38 @@ const defaultGear = [
 
 let gearItems = JSON.parse(JSON.stringify(defaultGear));
 
-// ── Tab logic ──
-function showTab(name) {
+// ── Offset scroll body below sticky header ──
+function setScrollOffset() {
+  const hdr = document.getElementById('sticky-header');
+  const h = hdr.offsetHeight;
+  document.getElementById('scroll-body').style.paddingTop = (h + 2) + 'px';
+  document.getElementById('tabs').style.top = h + 'px';
+}
+
+// ── Tabs ──
+function showTab(name, btn) {
   document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
+  btn.classList.add('active');
 }
 
 // ── localStorage ──
 let saveTimer = null;
-function scheduleSave() {
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveState, 600);
-}
+function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveState, 600); }
 
 function saveState() {
   const state = {
-    hitchToBox:  fv('hitchToBox'),
-    boxToFA:     fv('boxToFA'),
-    axleSpread:  fv('axleSpread'),
-    raToEnd:     fv('raToEnd'),
-    trailerWt:   fv('trailerWt'),
-    carFrontWt:  fv('carFrontWt'),
-    carRearWt:   fv('carRearWt'),
-    wheelbase:   fv('wheelbase'),
-    noseOvr:     fv('noseOvr'),
-    tailOvr:     fv('tailOvr'),
-    noseDist:    parseFloat(document.getElementById('noseSlider').value),
+    hitchToBox: fv('hitchToBox'), boxToFA: fv('boxToFA'), axleSpread: fv('axleSpread'),
+    raToEnd: fv('raToEnd'), trailerWt: fv('trailerWt'), carFrontWt: fv('carFrontWt'),
+    carRearWt: fv('carRearWt'), wheelbase: fv('wheelbase'), noseOvr: fv('noseOvr'),
+    tailOvr: fv('tailOvr'), noseDist: parseFloat(document.getElementById('noseSlider').value),
     gear: gearItems.map(g => ({
-      id:  g.id,
+      id: g.id,
       name: document.getElementById('name_'+g.id)?.value ?? g.name,
-      wt:  parseFloat(document.getElementById('wt_'+g.id)?.value ?? g.wt),
-      pos: parseFloat(document.getElementById('pos_'+g.id)?.value ?? g.pos),
-      on:  document.getElementById('chk_'+g.id)?.checked ?? g.on,
+      wt:   parseFloat(document.getElementById('wt_'+g.id)?.value ?? g.wt),
+      pos:  parseFloat(document.getElementById('pos_'+g.id)?.value ?? g.pos),
+      on:   document.getElementById('chk_'+g.id)?.checked ?? g.on,
     }))
   };
   try {
@@ -609,33 +469,24 @@ function loadState() {
     if (!raw) return;
     const s = JSON.parse(raw);
     const set = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
-    set('hitchToBox', s.hitchToBox);
-    set('boxToFA',    s.boxToFA);
-    set('axleSpread', s.axleSpread);
-    set('raToEnd',    s.raToEnd);
-    set('trailerWt',  s.trailerWt);
-    set('carFrontWt', s.carFrontWt);
-    set('carRearWt',  s.carRearWt);
-    set('wheelbase',  s.wheelbase);
-    set('noseOvr',    s.noseOvr);
-    set('tailOvr',    s.tailOvr);
+    set('hitchToBox', s.hitchToBox); set('boxToFA', s.boxToFA); set('axleSpread', s.axleSpread);
+    set('raToEnd', s.raToEnd); set('trailerWt', s.trailerWt); set('carFrontWt', s.carFrontWt);
+    set('carRearWt', s.carRearWt); set('wheelbase', s.wheelbase);
+    set('noseOvr', s.noseOvr); set('tailOvr', s.tailOvr);
     if (s.noseDist !== undefined) {
       document.getElementById('noseSlider').value = s.noseDist;
       document.getElementById('noseVal').textContent = parseFloat(s.noseDist).toFixed(1);
     }
-    if (s.gear) {
-      s.gear.forEach(sg => {
-        const g = gearItems.find(x => x.id === sg.id);
-        if (g) { g.name = sg.name; g.wt = sg.wt; g.pos = sg.pos; g.on = sg.on; }
-      });
-    }
+    if (s.gear) s.gear.forEach(sg => {
+      const g = gearItems.find(x => x.id === sg.id);
+      if (g) { g.name = sg.name; g.wt = sg.wt; g.pos = sg.pos; g.on = sg.on; }
+    });
   } catch(e) {}
 }
 
-// ── Build gear list ──
-function getBoxLen() {
-  return fv('boxToFA') + fv('axleSpread') + fv('raToEnd');
-}
+function fv(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
+
+function getBoxLen() { return fv('boxToFA') + fv('axleSpread') + fv('raToEnd'); }
 
 function buildGearList() {
   const boxLen = getBoxLen();
@@ -661,67 +512,46 @@ function buildGearList() {
         <span class="gear-slider-val"><span id="posval_${g.id}">${clampedPos}</span>"</span>
       </div>`;
     c.appendChild(card);
-
-    const chk    = card.querySelector('#chk_'+g.id);
-    const posSl  = card.querySelector('#pos_'+g.id);
-    const posVl  = card.querySelector('#posval_'+g.id);
-    const wtInp  = card.querySelector('#wt_'+g.id);
-    const nmInp  = card.querySelector('#name_'+g.id);
-
-    chk.addEventListener('change', () => {
-      card.classList.toggle('inactive', !chk.checked);
-      calc(); scheduleSave();
-    });
+    const chk   = card.querySelector('#chk_'+g.id);
+    const posSl = card.querySelector('#pos_'+g.id);
+    const posVl = card.querySelector('#posval_'+g.id);
+    const wtInp = card.querySelector('#wt_'+g.id);
+    const nmInp = card.querySelector('#name_'+g.id);
+    chk.addEventListener('change', () => { card.classList.toggle('inactive', !chk.checked); calc(); scheduleSave(); });
     posSl.addEventListener('input', () => { posVl.textContent = posSl.value; calc(); scheduleSave(); });
     wtInp.addEventListener('input', () => { calc(); scheduleSave(); });
     nmInp.addEventListener('input', scheduleSave);
   });
 }
 
-function fv(id) { return parseFloat(document.getElementById(id)?.value) || 0; }
-
-// ── Main calculation ──
 function calc() {
-  const hitchToBox = fv('hitchToBox');
-  const boxToFA    = fv('boxToFA');
-  const axleSpread = fv('axleSpread');
-  const raToEnd    = fv('raToEnd');
-  const trailerWt  = fv('trailerWt');
-  const carFrontWt = fv('carFrontWt');
-  const carRearWt  = fv('carRearWt');
-  const wheelbase  = fv('wheelbase');
-  const noseOvr    = fv('noseOvr');
-  const tailOvr    = fv('tailOvr');
+  const hitchToBox = fv('hitchToBox'), boxToFA = fv('boxToFA'), axleSpread = fv('axleSpread');
+  const raToEnd = fv('raToEnd'), trailerWt = fv('trailerWt');
+  const carFrontWt = fv('carFrontWt'), carRearWt = fv('carRearWt');
+  const wheelbase = fv('wheelbase'), noseOvr = fv('noseOvr'), tailOvr = fv('tailOvr');
 
-  const boxLen       = boxToFA + axleSpread + raToEnd;
-  const trailerFABox = boxToFA;
-  const trailerRABox = boxToFA + axleSpread;
-  const axleMidBox   = (trailerFABox + trailerRABox) / 2;
+  const boxLen = boxToFA + axleSpread + raToEnd;
+  const trailerFABox = boxToFA, trailerRABox = boxToFA + axleSpread;
+  const axleMidBox = (trailerFABox + trailerRABox) / 2;
   const axleMidHitch = hitchToBox + axleMidBox;
 
-  // Clamp nose slider
   const sl = document.getElementById('noseSlider');
-  const carLen  = noseOvr + wheelbase + tailOvr;
+  const carLen = noseOvr + wheelbase + tailOvr;
   const maxNose = Math.max(0, boxLen - carLen - 1);
   sl.max = maxNose.toFixed(1);
   if (parseFloat(sl.value) > maxNose) sl.value = maxNose;
   document.getElementById('noseVal').textContent = parseFloat(sl.value).toFixed(1);
   const noseDist = parseFloat(sl.value);
 
-  const carFABox   = noseDist + noseOvr;
-  const carRABox   = carFABox + wheelbase;
+  const carFABox = noseDist + noseOvr, carRABox = carFABox + wheelbase;
   const carTailBox = carRABox + tailOvr;
-  const carFAHitch = hitchToBox + carFABox;
-  const carRAHitch = hitchToBox + carRABox;
-  const tailClear  = boxLen - carTailBox;
-  const carCGBox   = (carFABox * carFrontWt + carRABox * carRearWt) / (carFrontWt + carRearWt);
+  const carFAHitch = hitchToBox + carFABox, carRAHitch = hitchToBox + carRABox;
+  const tailClear = boxLen - carTailBox;
+  const carCGBox = (carFABox * carFrontWt + carRABox * carRearWt) / (carFrontWt + carRearWt);
 
-  function tw(W, dFromHitch) {
-    return W * (axleMidHitch - dFromHitch) / axleMidHitch;
-  }
+  function tw(W, d) { return W * (axleMidHitch - d) / axleMidHitch; }
 
   const twCar = tw(carFrontWt, carFAHitch) + tw(carRearWt, carRAHitch);
-
   let twGear = 0, totalGearWt = 0;
   gearItems.forEach(g => {
     const chk = document.getElementById('chk_'+g.id);
@@ -730,7 +560,6 @@ function calc() {
     const wt  = parseFloat(document.getElementById('wt_'+g.id)?.value) || 0;
     twGear += tw(wt, hitchToBox + pos);
     totalGearWt += wt;
-    // update gear slider max
     const gsl = document.getElementById('pos_'+g.id);
     if (gsl) {
       gsl.max = Math.round(boxLen);
@@ -743,13 +572,10 @@ function calc() {
   });
 
   const twTrailer = trailerWt * 0.10;
-  const totalTW   = Math.round(twCar + twGear + twTrailer);
-  const totalCarWt = carFrontWt + carRearWt;
-  const gtw       = Math.round(trailerWt + totalCarWt + totalGearWt);
-  const rem       = LIMIT - totalTW;
-  const gtwRem    = GTW_LIMIT - gtw;
+  const totalTW = Math.round(twCar + twGear + twTrailer);
+  const gtw = Math.round(trailerWt + carFrontWt + carRearWt + totalGearWt);
+  const rem = LIMIT - totalTW;
 
-  // Update metrics
   const twEl = document.getElementById('r-tw');
   twEl.textContent = totalTW;
   twEl.className = 'metric-value' + (totalTW > LIMIT ? ' bad' : totalTW > WARN ? ' warn' : ' ok');
@@ -760,12 +586,10 @@ function calc() {
 
   document.getElementById('r-rem').textContent = rem;
 
-  // Header
   const htw = document.getElementById('header-tw');
   htw.textContent = totalTW + ' lb TW';
-  htw.className = 'header-tw' + (totalTW > LIMIT ? ' bad' : totalTW > WARN ? ' warn' : '');
+  htw.className = 'hdr-tw' + (totalTW > LIMIT ? ' bad' : totalTW > WARN ? ' warn' : '');
 
-  // Status banner
   const banner = document.getElementById('status-banner');
   let msgs = [];
   if (totalTW > LIMIT)     msgs.push(`TW over by ${-rem} lbs — slide car rearward or move heavy gear aft of axle midpoint`);
@@ -775,110 +599,78 @@ function calc() {
   banner.textContent = msgs.join(' · ');
   banner.className = (totalTW > LIMIT || gtw > GTW_LIMIT) ? 'bad' : totalTW > WARN ? 'warn' : 'ok';
 
-  // Info strip
   document.getElementById('info-strip').innerHTML =
     `<span>Nose gap <strong>${noseDist.toFixed(1)}"</strong></span>` +
     `<span>Tail clearance <strong>${tailClear.toFixed(1)}"</strong></span>` +
-    `<span>Car CG from box front <strong>${carCGBox.toFixed(1)}"</strong></span>` +
-    `<span>Axle mid from box front <strong>${axleMidBox.toFixed(1)}"</strong></span>` +
+    `<span>Car CG <strong>${carCGBox.toFixed(1)}" from box front</strong></span>` +
+    `<span>Axle mid <strong>${axleMidBox.toFixed(1)}" from box front</strong></span>` +
     `<span>Car TW <strong>${Math.round(twCar)} lbs</strong></span>` +
     `<span>Gear TW <strong>${Math.round(twGear)} lbs</strong></span>` +
     `<span>Trailer TW est <strong>${Math.round(twTrailer)} lbs</strong></span>`;
 
-  drawDiagram({
-    hitchToBox, boxLen, trailerFABox, trailerRABox, axleMidBox,
-    noseDist, carFABox, carRABox, carTailBox, totalTW, tailClear
-  });
+  drawDiagram({ hitchToBox, boxLen, trailerFABox, trailerRABox, axleMidBox,
+                noseDist, carFABox, carRABox, carTailBox, totalTW, tailClear });
+
+  setScrollOffset();
 }
 
-// ── SVG Diagram ──
 function drawDiagram(p) {
   const svg = document.getElementById('svg');
-  const xL = 50, xR = 656;
-  const span = p.hitchToBox + p.boxLen + 8;
+  const xL = 50, xR = 656, span = p.hitchToBox + p.boxLen + 8;
   function sx(fh) { return xL + (fh / span) * (xR - xL); }
   function bx(fb) { return sx(p.hitchToBox + fb); }
-
-  const tY = 90, tH = 34, gY = tY + tH + 22, cY = tY - 30, cH = 24, lblY = gY + 18;
+  const tY = 72, tH = 30, gY = tY + tH + 18, cY = tY - 26, cH = 22, lblY = gY + 16;
   const totalTW = parseInt(document.getElementById('r-tw').textContent) || 0;
-  const twc   = totalTW > LIMIT ? '#f87171' : totalTW > WARN ? '#fbbf24' : '#34d399';
+  const twc = totalTW > LIMIT ? '#f87171' : totalTW > WARN ? '#fbbf24' : '#34d399';
   const carClr = p.tailClear >= 0 ? '#34d399' : '#f87171';
-
   let h = `<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
-
-  // Ground
   h += `<line x1="${sx(0)}" y1="${gY}" x2="${bx(p.boxLen)}" y2="${gY}" stroke="#2e2e34" stroke-width="1"/>`;
-
-  // Hitch
   const hx = sx(0);
-  h += `<polygon points="${hx},${tY+tH/2-5} ${hx-11},${tY+tH/2+8} ${hx+2},${tY+tH/2+8}" fill="#222226" stroke="#3e3e46" stroke-width="0.5"/>`;
-  h += `<text x="${hx-5}" y="${gY+15}" text-anchor="middle" font-size="9" fill="#5c5c6a" font-family="DM Sans,sans-serif">hitch</text>`;
-
-  // Trailer box
+  h += `<polygon points="${hx},${tY+tH/2-4} ${hx-10},${tY+tH/2+7} ${hx+2},${tY+tH/2+7}" fill="#222226" stroke="#3e3e46" stroke-width="0.5"/>`;
+  h += `<text x="${hx-5}" y="${gY+13}" text-anchor="middle" font-size="8" fill="#5c5c6a" font-family="DM Sans,sans-serif">hitch</text>`;
   h += `<rect x="${bx(0)}" y="${tY}" width="${bx(p.boxLen)-bx(0)}" height="${tH}" rx="3" fill="#18181b" stroke="#2e2e34" stroke-width="1"/>`;
-
-  // Axles + wheels
   [p.trailerFABox, p.trailerRABox].forEach(ax => {
     const x = bx(ax);
     h += `<line x1="${x}" y1="${tY+tH}" x2="${x}" y2="${gY+4}" stroke="#9494a0" stroke-width="2" stroke-linecap="round"/>`;
-    h += `<circle cx="${x}" cy="${gY+5}" r="6" fill="#18181b" stroke="#9494a0" stroke-width="1.5"/>`;
+    h += `<circle cx="${x}" cy="${gY+5}" r="5" fill="#18181b" stroke="#9494a0" stroke-width="1.5"/>`;
   });
-
-  // Axle midpoint
   const mx = bx(p.axleMidBox);
-  h += `<line x1="${mx}" y1="${tY-12}" x2="${mx}" y2="${gY+12}" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="4 3"/>`;
-  h += `<text x="${mx}" y="${tY-16}" text-anchor="middle" font-size="9" fill="#4f8ef7" font-family="DM Sans,sans-serif">axle mid</text>`;
-
-  // Gear dots
+  h += `<line x1="${mx}" y1="${tY-10}" x2="${mx}" y2="${gY+11}" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="4 3"/>`;
+  h += `<text x="${mx}" y="${tY-13}" text-anchor="middle" font-size="8" fill="#4f8ef7" font-family="DM Sans,sans-serif">axle mid</text>`;
   gearItems.forEach(g => {
     if (!document.getElementById('chk_'+g.id)?.checked) return;
     const pos = parseFloat(document.getElementById('pos_'+g.id)?.value) || 0;
-    h += `<circle cx="${bx(pos)}" cy="${tY+tH/2}" r="4" fill="#f59e0b" opacity="0.8"/>`;
+    h += `<circle cx="${bx(pos)}" cy="${tY+tH/2}" r="3.5" fill="#f59e0b" opacity="0.8"/>`;
   });
-
-  // Car
   const cx1 = bx(p.noseDist), cx2 = bx(p.carTailBox);
   h += `<rect x="${cx1}" y="${cY}" width="${Math.max(cx2-cx1,2)}" height="${cH}" rx="3" fill="${carClr}" opacity="0.12" stroke="${carClr}" stroke-width="1"/>`;
-  h += `<text x="${(cx1+cx2)/2}" y="${cY+cH/2}" text-anchor="middle" dominant-baseline="central" font-size="10" fill="${carClr}" font-family="DM Sans,sans-serif">race car</text>`;
+  h += `<text x="${(cx1+cx2)/2}" y="${cY+cH/2}" text-anchor="middle" dominant-baseline="central" font-size="9" fill="${carClr}" font-family="DM Sans,sans-serif">race car</text>`;
   [p.carFABox, p.carRABox].forEach(ax => {
     const x = bx(ax);
     h += `<line x1="${x}" y1="${cY+cH}" x2="${x}" y2="${tY}" stroke="${carClr}" stroke-width="1" stroke-dasharray="3 2" opacity="0.45"/>`;
-    h += `<circle cx="${x}" cy="${cY+cH}" r="2.5" fill="${carClr}" opacity="0.7"/>`;
+    h += `<circle cx="${x}" cy="${cY+cH}" r="2" fill="${carClr}" opacity="0.7"/>`;
   });
-
-  // TW arrow
-  h += `<line x1="${hx-4}" y1="${tY+tH/2-17}" x2="${hx-4}" y2="${tY+tH/2-4}" stroke="${twc}" stroke-width="2" marker-end="url(#ar)"/>`;
-  h += `<text x="${hx-8}" y="${tY+tH/2-21}" text-anchor="end" font-size="10" font-weight="500" fill="${twc}" font-family="DM Mono,monospace">${totalTW} lb</text>`;
-
-  // Nose gap
+  h += `<line x1="${hx-4}" y1="${tY+tH/2-15}" x2="${hx-4}" y2="${tY+tH/2-4}" stroke="${twc}" stroke-width="2" marker-end="url(#ar)"/>`;
+  h += `<text x="${hx-8}" y="${tY+tH/2-18}" text-anchor="end" font-size="9" font-weight="500" fill="${twc}" font-family="DM Mono,monospace">${totalTW} lb</text>`;
   if (p.noseDist > 2) {
-    const n1 = bx(0), n2 = bx(p.noseDist), ny = cY - 6;
+    const n1 = bx(0), n2 = bx(p.noseDist), ny = cY - 5;
     h += `<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#5c5c6a" stroke-width="0.5" marker-end="url(#ar)" marker-start="url(#ar)"/>`;
-    h += `<text x="${(n1+n2)/2}" y="${ny-4}" text-anchor="middle" font-size="9" fill="#5c5c6a" font-family="DM Sans,sans-serif">${p.noseDist.toFixed(1)}"</text>`;
+    h += `<text x="${(n1+n2)/2}" y="${ny-3}" text-anchor="middle" font-size="8" fill="#5c5c6a" font-family="DM Sans,sans-serif">${p.noseDist.toFixed(1)}"</text>`;
   }
-
-  // Box length label
-  h += `<text x="${(bx(0)+bx(p.boxLen))/2}" y="${lblY}" text-anchor="middle" font-size="9" fill="#5c5c6a" font-family="DM Sans,sans-serif">box ${p.boxLen}" · axle mid at ${p.axleMidBox.toFixed(1)}"</text>`;
-
+  h += `<text x="${(bx(0)+bx(p.boxLen))/2}" y="${lblY}" text-anchor="middle" font-size="8" fill="#5c5c6a" font-family="DM Sans,sans-serif">box ${p.boxLen}" · axle mid at ${p.axleMidBox.toFixed(1)}"</text>`;
   svg.innerHTML = h;
 }
 
-// ── Wire up static inputs ──
 function wireInputs() {
-  document.querySelectorAll('input[type=number]').forEach(el => {
-    el.addEventListener('input', () => { calc(); scheduleSave(); });
-  });
+  document.querySelectorAll('input[type=number]').forEach(el => el.addEventListener('input', () => { calc(); scheduleSave(); }));
   document.getElementById('noseSlider').addEventListener('input', () => {
     document.getElementById('noseVal').textContent = parseFloat(document.getElementById('noseSlider').value).toFixed(1);
     calc(); scheduleSave();
   });
 }
 
-// ── Init ──
 loadState();
 buildGearList();
 wireInputs();
 calc();
-</script>
-</body>
-</html>
+window.addEventListener('resize', setScrollOffset);
