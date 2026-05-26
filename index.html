@@ -610,8 +610,6 @@ function calc() {
 
   drawDiagram({ hitchToBox, boxLen, trailerFABox, trailerRABox, axleMidBox,
                 noseDist, carFABox, carRABox, carTailBox, totalTW, tailClear });
-
-  setScrollOffset();
 }
 
 function drawDiagram(p) {
@@ -669,8 +667,11 @@ function wireInputs() {
   });
 }
 
-loadState();
-buildGearList();
-wireInputs();
-calc();
-window.addEventListener('resize', setScrollOffset);
+window.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  buildGearList();
+  wireInputs();
+  calc();
+  setScrollOffset();
+  window.addEventListener('resize', setScrollOffset);
+});
