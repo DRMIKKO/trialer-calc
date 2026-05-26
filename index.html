@@ -17,12 +17,19 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 #banner{padding:.3rem 1rem;font-size:.73rem;font-weight:500;border-bottom:1px solid var(--bd);transition:background .2s,color .2s}
 #banner.ok{background:var(--ok-bg);color:var(--ok)}#banner.warn{background:var(--wn-bg);color:var(--wn)}#banner.bad{background:var(--bad-bg);color:var(--bad)}
 .metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;padding:.35rem 1rem;border-bottom:1px solid var(--bd)}
-.metric{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.35rem .55rem}
+.metric{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.35rem .55rem;position:relative}
 .mlbl{font-size:.58rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em}
 .mlim{font-size:.56rem;color:var(--tx3);margin-bottom:1px}
 .mval{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;color:var(--tx);transition:color .2s;line-height:1.1}
 .mval.ok{color:var(--ok)}.mval.warn{color:var(--wn)}.mval.bad{color:var(--bad)}
 .munit{font-size:.58rem;color:var(--tx3)}
+/* pie metric */
+.metric-pie{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.35rem .55rem;display:flex;align-items:center;gap:.5rem}
+.pie-info{flex:1;min-width:0}
+.pie-pct{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;line-height:1.1;transition:color .2s}
+.pie-pct.ok{color:var(--ok)}.pie-pct.warn{color:var(--wn)}.pie-pct.bad{color:var(--bad)}
+.pie-sublbl{font-size:.56rem;color:var(--tx3)}
+.pie-svg{flex-shrink:0;width:38px;height:38px}
 .istrip{display:flex;flex-wrap:wrap;gap:.2rem .8rem;padding:.3rem 1rem;font-size:.65rem;color:var(--tx3);border-bottom:1px solid var(--bd)}
 .istrip strong{color:var(--tx2);font-weight:500}
 .dgwrap{padding:0 1rem .35rem;background:var(--bg)}
@@ -80,9 +87,48 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
   </div>
   <div id="banner" class="ok">Calculating…</div>
   <div class="metrics">
-    <div class="metric"><div class="mlbl">Tongue weight</div><div class="mlim">600 lb max</div><div class="mval" id="rtw">—</div><div class="munit">lbs</div></div>
-    <div class="metric"><div class="mlbl">Gross trailer wt</div><div class="mlim">7,715 lb max</div><div class="mval" id="rgtw">—</div><div class="munit">lbs</div></div>
-    <div class="metric"><div class="mlbl">TW headroom</div><div class="mlim">vs 600 lb limit</div><div class="mval" id="rrem">—</div><div class="munit">lbs</div></div>
+    <!-- Tongue weight -->
+    <div class="metric">
+      <div class="mlbl">Tongue weight</div>
+      <div class="mlim">600 lb goal</div>
+      <div class="mval" id="rtw">—</div>
+      <div class="munit">lbs</div>
+    </div>
+    <!-- TW pie -->
+    <div class="metric-pie">
+      <div class="pie-info">
+        <div class="mlbl">TW of limit</div>
+        <div class="mlim">600 lb max</div>
+        <div class="pie-pct" id="tw-pct">—</div>
+        <div class="pie-sublbl">of limit</div>
+      </div>
+      <svg class="pie-svg" id="tw-pie" viewBox="0 0 38 38"></svg>
+    </div>
+    <!-- GTW pie -->
+    <div class="metric-pie">
+      <div class="pie-info">
+        <div class="mlbl">GTW of limit</div>
+        <div class="mlim">7,715 lb max</div>
+        <div class="pie-pct" id="gtw-pct">—</div>
+        <div class="pie-sublbl">of limit</div>
+      </div>
+      <svg class="pie-svg" id="gtw-pie" viewBox="0 0 38 38"></svg>
+    </div>
+  </div>
+  <!-- second metrics row: tongue weight lbs + GTW lbs -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.35rem;padding:.0rem 1rem .35rem;border-bottom:1px solid var(--bd)">
+    <div class="metric">
+      <div class="mlbl">Gross trailer wt</div>
+      <div class="mlim">7,715 lb max</div>
+      <div class="mval" id="rgtw">—</div>
+      <div class="munit">lbs</div>
+    </div>
+    <div class="metric">
+      <div class="mlbl">TW headroom</div>
+      <div class="mlim">vs 600 lb limit</div>
+      <div class="mval" id="rrem">—</div>
+      <div class="munit">lbs</div>
+    </div>
   </div>
   <div class="istrip" id="istrip"></div>
   <div class="dgwrap">
@@ -148,22 +194,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 </div>
 
 <script>
-const LIM=600,WRN=540,GLIM=7715,SK='twc2';
+const LIM=600,WRN=540,GLIM=7715,SK='twc3';
 const DG=[
-  {id:'wheels', name:'Wheels & tires',   wt:182,pos:180,on:true},
-  {id:'fuel',   name:'Fuel',             wt:60, pos:210,on:true},
-  {id:'rack',   name:'Tire rack',        wt:20, pos:170,on:true},
-  {id:'jack',   name:'Jack & stands',    wt:40, pos:160,on:true},
-  {id:'tools',  name:'Tools',            wt:30, pos:150,on:true},
-  {id:'gen',    name:'Generator/batt',   wt:100,pos:130,on:true},
-  {id:'pump',   name:'Tire pump',        wt:8,  pos:155,on:false},
-  {id:'spray',  name:'Water sprayer',    wt:13, pos:200,on:false},
-  {id:'cooler', name:'Cooler',           wt:50, pos:165,on:false},
-  {id:'bench',  name:'Bench',            wt:20, pos:220,on:false},
-  {id:'table',  name:'Table',            wt:10, pos:215,on:false},
-  {id:'chairs', name:'Chairs',           wt:5,  pos:230,on:false},
-  {id:'skate',  name:'Skateboard',       wt:25, pos:225,on:false},
-  {id:'bike',   name:'Bike',             wt:50, pos:228,on:false},
+  {id:'wheels',name:'Wheels & tires',   wt:182,pos:180,on:true},
+  {id:'fuel',  name:'Fuel',             wt:60, pos:210,on:true},
+  {id:'rack',  name:'Tire rack',        wt:20, pos:170,on:true},
+  {id:'jack',  name:'Jack & stands',    wt:40, pos:160,on:true},
+  {id:'tools', name:'Tools',            wt:30, pos:150,on:true},
+  {id:'gen',   name:'Generator/batt',   wt:100,pos:130,on:true},
+  {id:'pump',  name:'Tire pump',        wt:8,  pos:155,on:false},
+  {id:'spray', name:'Water sprayer',    wt:13, pos:200,on:false},
+  {id:'cooler',name:'Cooler',           wt:50, pos:165,on:false},
+  {id:'bench', name:'Bench',            wt:20, pos:220,on:false},
+  {id:'table', name:'Table',            wt:10, pos:215,on:false},
+  {id:'chairs',name:'Chairs',           wt:5,  pos:230,on:false},
+  {id:'skate', name:'Skateboard',       wt:25, pos:225,on:false},
+  {id:'bike',  name:'Bike',             wt:50, pos:228,on:false},
 ];
 let gear=JSON.parse(JSON.stringify(DG));
 
@@ -182,6 +228,24 @@ function showTab(n,btn){
   document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+n).classList.add('active');
   btn.classList.add('active');
+}
+
+// ── Pie chart helper ──
+function drawPie(svgId, pct, color){
+  const svg=document.getElementById(svgId);
+  if(!svg)return;
+  const r=16, cx=19, cy=19, circ=2*Math.PI*r;
+  const clamped=Math.min(Math.max(pct,0),1);
+  const dash=clamped*circ;
+  const gap=circ-dash;
+  // background ring
+  let h=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#2e2e34" stroke-width="5"/>`;
+  // filled arc (starts at top)
+  h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="5"
+    stroke-dasharray="${dash.toFixed(2)} ${gap.toFixed(2)}"
+    stroke-dashoffset="${(circ*0.25).toFixed(2)}"
+    stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})" style="transition:stroke-dasharray .4s"/>`;
+  svg.innerHTML=h;
 }
 
 let stimer=null;
@@ -209,7 +273,7 @@ function load(){
   try{
     const raw=localStorage.getItem(SK);if(!raw)return;
     const s=JSON.parse(raw);
-    const sv=(id,v)=>{const e=document.getElementById(id);if(e&&v!==undefined)e.value=v;};
+    const sv=(id,v)=>{const e=document.getElementById(id);if(e&&v!=null)e.value=v;};
     sv('h2b',s.h2b);sv('b2a',s.b2a);sv('asp',s.asp);sv('a2e',s.a2e);sv('twt',s.twt);
     sv('carFW',s.carFW);sv('carRW',s.carRW);sv('wb',s.wb);sv('no',s.no);sv('to',s.to);
     if(s.nsl!=null){document.getElementById('nsl').value=s.nsl;document.getElementById('nv').textContent=parseFloat(s.nsl).toFixed(1);}
@@ -252,13 +316,13 @@ function buildGear(){
 
 function calc(){
   try{
-    const h2b=fv('h2b')||44, b2a=fv('b2a')||124, asp=fv('asp')||45.5;
-    const a2e=fv('a2e')||72.5, twt=fv('twt')||2510;
-    const cFW=fv('carFW')||1980, cRW=fv('carRW')||1217;
-    const wb=fv('wb')||103.5, no=fv('no')||39, to=fv('to')||38;
+    const h2b=fv('h2b')||44,b2a=fv('b2a')||124,asp=fv('asp')||45.5;
+    const a2e=fv('a2e')||72.5,twt=fv('twt')||2510;
+    const cFW=fv('carFW')||1980,cRW=fv('carRW')||1217;
+    const wb=fv('wb')||103.5,no=fv('no')||39,to=fv('to')||38;
 
     const bl=b2a+asp+a2e;
-    const tFA=b2a, tRA=b2a+asp, amid=(tFA+tRA)/2, amH=h2b+amid;
+    const tFA=b2a,tRA=b2a+asp,amid=(tFA+tRA)/2,amH=h2b+amid;
     if(amH===0)return;
 
     const sl=document.getElementById('nsl');
@@ -269,8 +333,8 @@ function calc(){
     document.getElementById('nv').textContent=parseFloat(sl.value).toFixed(1);
     const nd=parseFloat(sl.value);
 
-    const cFA=nd+no, cRA=cFA+wb, cTail=cRA+to;
-    const cFAH=h2b+cFA, cRAH=h2b+cRA;
+    const cFA=nd+no,cRA=cFA+wb,cTail=cRA+to;
+    const cFAH=h2b+cFA,cRAH=h2b+cRA;
     const tc=bl-cTail;
     const cCG=(cFA*cFW+cRA*cRW)/(cFW+cRW);
 
@@ -292,16 +356,39 @@ function calc(){
     const tot=Math.round(twCar+twG+twT);
     const gtw=Math.round(twt+cFW+cRW+gWt);
     const rem=LIM-tot;
+    const twPct=tot/LIM;
+    const gtwPct=gtw/GLIM;
 
+    // TW color
+    const twColor=tot>LIM?'#f87171':tot>WRN?'#fbbf24':'#34d399';
+    const gtwColor=gtw>GLIM?'#f87171':gtw>GLIM*0.9?'#fbbf24':'#34d399';
+
+    // Metrics
     const te=document.getElementById('rtw');
     te.textContent=tot;te.className='mval'+(tot>LIM?' bad':tot>WRN?' warn':' ok');
+
     const ge=document.getElementById('rgtw');
     ge.textContent=gtw.toLocaleString();ge.className='mval'+(gtw>GLIM?' bad':'');
-    document.getElementById('rrem').textContent=rem;
 
+    const re=document.getElementById('rrem');
+    re.textContent=rem;re.className='mval'+(rem<0?' bad':rem<60?' warn':' ok');
+
+    // Pie charts
+    const twPe=document.getElementById('tw-pct');
+    twPe.textContent=Math.round(twPct*100)+'%';
+    twPe.className='pie-pct'+(tot>LIM?' bad':tot>WRN?' warn':' ok');
+    drawPie('tw-pie',twPct,twColor);
+
+    const gpPe=document.getElementById('gtw-pct');
+    gpPe.textContent=Math.round(gtwPct*100)+'%';
+    gpPe.className='pie-pct'+(gtw>GLIM?' bad':gtw>GLIM*0.9?' warn':' ok');
+    drawPie('gtw-pie',gtwPct,gtwColor);
+
+    // Header
     const hw=document.getElementById('htw');
     hw.textContent=tot+' lb TW';hw.className='hdr-tw'+(tot>LIM?' bad':tot>WRN?' warn':'');
 
+    // Banner
     const bn=document.getElementById('banner');
     let msg=tot>LIM?`TW over by ${-rem} lbs — slide car rearward or move heavy gear aft of axle midpoint`:
             tot>WRN?`TW close to limit — ${rem} lbs remaining, verify with tongue scale`:
@@ -309,6 +396,7 @@ function calc(){
     if(gtw>GLIM)msg+=' · GTW over by '+(gtw-GLIM)+' lbs';
     bn.textContent=msg;bn.className=(tot>LIM||gtw>GLIM)?'bad':tot>WRN?'warn':'ok';
 
+    // Info strip
     document.getElementById('istrip').innerHTML=
       `<span>Nose gap <strong>${nd.toFixed(1)}"</strong></span>`+
       `<span>Tail clearance <strong>${tc.toFixed(1)}"</strong></span>`+
@@ -328,44 +416,59 @@ function draw(p){
   const xL=50,xR=656,span=p.h2b+p.bl+8;
   const sx=fh=>xL+(fh/span)*(xR-xL);
   const bx=fb=>sx(p.h2b+fb);
-  const tY=72,tH=30,gY=tY+tH+18,cY=tY-26,cH=22,lY=gY+16;
+  const tY=72,tH=30,gY=tY+tH+18,cY=tY-28,cH=24,lY=gY+16;
   const tot=parseInt(document.getElementById('rtw').textContent)||0;
   const tc=tot>LIM?'#f87171':tot>WRN?'#fbbf24':'#34d399';
   const cc=p.tc>=0?'#34d399':'#f87171';
   const hx=sx(0);
   let h=`<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
+  // ground
   h+=`<line x1="${sx(0)}" y1="${gY}" x2="${bx(p.bl)}" y2="${gY}" stroke="#2e2e34" stroke-width="1"/>`;
+  // hitch
   h+=`<polygon points="${hx},${tY+tH/2-4} ${hx-10},${tY+tH/2+7} ${hx+2},${tY+tH/2+7}" fill="#222226" stroke="#3e3e46" stroke-width="0.5"/>`;
   h+=`<text x="${hx-5}" y="${gY+13}" text-anchor="middle" font-size="8" fill="#5c5c6a" font-family="DM Sans,sans-serif">hitch</text>`;
+  // trailer box
   h+=`<rect x="${bx(0)}" y="${tY}" width="${bx(p.bl)-bx(0)}" height="${tH}" rx="3" fill="#18181b" stroke="#2e2e34" stroke-width="1"/>`;
+  // axles + wheels
   [p.tFA,p.tRA].forEach(ax=>{
     const x=bx(ax);
     h+=`<line x1="${x}" y1="${tY+tH}" x2="${x}" y2="${gY+4}" stroke="#9494a0" stroke-width="2" stroke-linecap="round"/>`;
     h+=`<circle cx="${x}" cy="${gY+5}" r="5" fill="#18181b" stroke="#9494a0" stroke-width="1.5"/>`;
   });
+  // axle midpoint
   const mx=bx(p.amid);
   h+=`<line x1="${mx}" y1="${tY-10}" x2="${mx}" y2="${gY+11}" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="4 3"/>`;
   h+=`<text x="${mx}" y="${tY-13}" text-anchor="middle" font-size="8" fill="#4f8ef7" font-family="DM Sans,sans-serif">axle mid</text>`;
+  // gear dots inside trailer box
   gear.forEach(g=>{
     if(!document.getElementById('ck_'+g.id)?.checked)return;
     const pos=parseFloat(document.getElementById('ps_'+g.id)?.value)||0;
     h+=`<circle cx="${bx(pos)}" cy="${tY+tH/2}" r="3.5" fill="#f59e0b" opacity="0.8"/>`;
   });
+  // car — drawn above trailer box, label inside car rect only
   const cx1=bx(p.nd),cx2=bx(p.cTail);
-  h+=`<rect x="${cx1}" y="${cY}" width="${Math.max(cx2-cx1,2)}" height="${cH}" rx="3" fill="${cc}" opacity="0.12" stroke="${cc}" stroke-width="1"/>`;
-  h+=`<text x="${(cx1+cx2)/2}" y="${cY+cH/2}" text-anchor="middle" dominant-baseline="central" font-size="9" fill="${cc}" font-family="DM Sans,sans-serif">race car</text>`;
+  const carW=Math.max(cx2-cx1,2);
+  h+=`<rect x="${cx1}" y="${cY}" width="${carW}" height="${cH}" rx="3" fill="${cc}" opacity="0.12" stroke="${cc}" stroke-width="1"/>`;
+  // only draw label if car is wide enough
+  if(carW>60){
+    h+=`<text x="${(cx1+cx2)/2}" y="${cY+cH/2}" text-anchor="middle" dominant-baseline="central" font-size="9" fill="${cc}" font-family="DM Sans,sans-serif">race car</text>`;
+  }
+  // car axle marks
   [p.cFA,p.cRA].forEach(ax=>{
     const x=bx(ax);
     h+=`<line x1="${x}" y1="${cY+cH}" x2="${x}" y2="${tY}" stroke="${cc}" stroke-width="1" stroke-dasharray="3 2" opacity="0.45"/>`;
     h+=`<circle cx="${x}" cy="${cY+cH}" r="2" fill="${cc}" opacity="0.7"/>`;
   });
+  // TW arrow
   h+=`<line x1="${hx-4}" y1="${tY+tH/2-15}" x2="${hx-4}" y2="${tY+tH/2-4}" stroke="${tc}" stroke-width="2" marker-end="url(#ar)"/>`;
   h+=`<text x="${hx-8}" y="${tY+tH/2-18}" text-anchor="end" font-size="9" font-weight="500" fill="${tc}" font-family="DM Mono,monospace">${tot} lb</text>`;
+  // nose gap annotation
   if(p.nd>2){
     const n1=bx(0),n2=bx(p.nd),ny=cY-5;
     h+=`<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#5c5c6a" stroke-width="0.5" marker-end="url(#ar)" marker-start="url(#ar)"/>`;
     h+=`<text x="${(n1+n2)/2}" y="${ny-3}" text-anchor="middle" font-size="8" fill="#5c5c6a" font-family="DM Sans,sans-serif">${p.nd.toFixed(1)}"</text>`;
   }
+  // box label
   h+=`<text x="${(bx(0)+bx(p.bl))/2}" y="${lY}" text-anchor="middle" font-size="8" fill="#5c5c6a" font-family="DM Sans,sans-serif">box ${p.bl}" · axle mid at ${p.amid.toFixed(1)}"</text>`;
   svg.innerHTML=h;
 }
@@ -379,10 +482,7 @@ function wire(){
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
-  load();
-  buildGear();
-  wire();
-  calc();
+  load();buildGear();wire();calc();
   window.addEventListener('resize',setOff);
 });
 </script>
