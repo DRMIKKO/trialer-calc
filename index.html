@@ -86,48 +86,32 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
     <span class="hdr-tw" id="htw">— lb TW</span>
   </div>
   <div id="banner" class="ok">Calculating…</div>
-  <div class="metrics">
-    <!-- Tongue weight -->
-    <div class="metric">
-      <div class="mlbl">Tongue weight</div>
-      <div class="mlim">600 lb goal</div>
-      <div class="mval" id="rtw">—</div>
-      <div class="munit">lbs</div>
-    </div>
-    <!-- TW pie -->
+  <div class="metrics" style="grid-template-columns:1fr 1fr">
+    <!-- TW combined cell -->
     <div class="metric-pie">
       <div class="pie-info">
-        <div class="mlbl">TW of limit</div>
-        <div class="mlim">600 lb max</div>
-        <div class="pie-pct" id="tw-pct">—</div>
-        <div class="pie-sublbl">of limit</div>
+        <div class="mlbl">Tongue weight</div>
+        <div class="mlim">600 lb max · <span id="rrem">—</span> lbs headroom</div>
+        <div class="mval" id="rtw" style="font-size:1.25rem">—</div>
+        <div style="display:flex;align-items:baseline;gap:.3rem;margin-top:1px">
+          <span class="pie-pct" id="tw-pct" style="font-size:.82rem">—</span>
+          <span class="munit">of limit</span>
+        </div>
       </div>
       <svg class="pie-svg" id="tw-pie" viewBox="0 0 38 38"></svg>
     </div>
-    <!-- GTW pie -->
+    <!-- GTW combined cell -->
     <div class="metric-pie">
       <div class="pie-info">
-        <div class="mlbl">GTW of limit</div>
+        <div class="mlbl">Gross trailer wt</div>
         <div class="mlim">7,715 lb max</div>
-        <div class="pie-pct" id="gtw-pct">—</div>
-        <div class="pie-sublbl">of limit</div>
+        <div class="mval" id="rgtw" style="font-size:1.25rem">—</div>
+        <div style="display:flex;align-items:baseline;gap:.3rem;margin-top:1px">
+          <span class="pie-pct" id="gtw-pct" style="font-size:.82rem">—</span>
+          <span class="munit">of limit</span>
+        </div>
       </div>
       <svg class="pie-svg" id="gtw-pie" viewBox="0 0 38 38"></svg>
-    </div>
-  </div>
-  <!-- second metrics row: tongue weight lbs + GTW lbs -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:.35rem;padding:.0rem 1rem .35rem;border-bottom:1px solid var(--bd)">
-    <div class="metric">
-      <div class="mlbl">Gross trailer wt</div>
-      <div class="mlim">7,715 lb max</div>
-      <div class="mval" id="rgtw">—</div>
-      <div class="munit">lbs</div>
-    </div>
-    <div class="metric">
-      <div class="mlbl">TW headroom</div>
-      <div class="mlim">vs 600 lb limit</div>
-      <div class="mval" id="rrem">—</div>
-      <div class="munit">lbs</div>
     </div>
   </div>
   <div class="istrip" id="istrip"></div>
