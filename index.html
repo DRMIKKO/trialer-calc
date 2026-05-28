@@ -108,17 +108,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 
   <div class="tpanel active" id="tab-car">
     <div class="sec">
-      <div class="stitle">Race car weights</div>
-      <div class="frow"><label>Front axle weight</label><input type="number" id="carFW" value="1980" step="5"><span class="funit">lbs</span></div>
-      <div class="frow"><label>Rear axle weight</label><input type="number" id="carRW" value="1217" step="5"><span class="funit">lbs</span></div>
-    </div>
-    <div class="sec">
-      <div class="stitle">Race car dimensions</div>
-      <div class="frow"><label>Wheelbase</label><input type="number" id="wb" value="103.5" step="0.5"><span class="funit">in</span></div>
-      <div class="frow"><label>Nose overhang (nose to front axle)</label><input type="number" id="no" value="39" step="0.5"><span class="funit">in</span></div>
-      <div class="frow"><label>Tail overhang (rear axle to tail)</label><input type="number" id="to" value="38" step="0.5"><span class="funit">in</span></div>
-    </div>
-    <div class="sec">
       <div class="poscard">
         <div class="poscard-title">Car position — nose from front of box</div>
         <div class="srow">
@@ -128,6 +117,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
         </div>
         <div class="snote">0 = nose against front wall · auto-clamps to keep car inside box</div>
       </div>
+    </div>
+    <div class="sec">
+      <div class="stitle">Race car weights</div>
+      <div class="frow"><label>Front axle weight</label><input type="number" id="carFW" value="1980" step="5"><span class="funit">lbs</span></div>
+      <div class="frow"><label>Rear axle weight</label><input type="number" id="carRW" value="1217" step="5"><span class="funit">lbs</span></div>
+    </div>
+    <div class="sec">
+      <div class="stitle">Race car dimensions</div>
+      <div class="frow"><label>Wheelbase</label><input type="number" id="wb" value="103.5" step="0.5"><span class="funit">in</span></div>
+      <div class="frow"><label>Nose overhang (nose to front axle)</label><input type="number" id="no" value="39" step="0.5"><span class="funit">in</span></div>
+      <div class="frow"><label>Tail overhang (rear axle to tail)</label><input type="number" id="to" value="38" step="0.5"><span class="funit">in</span></div>
     </div>
   </div>
 
@@ -232,8 +232,10 @@ function drawGauge(svgId, value, kind){
   const angleRad=(180+fraction*180)*Math.PI/180;
   const endX=150+120*Math.cos(angleRad);
   const endY=140+120*Math.sin(angleRad);
-  const largeArc=fraction>0.5?1:0;
-  const fillPath=`M 30 140 A 120 120 0 ${largeArc} 1 ${endX.toFixed(2)} ${endY.toFixed(2)}`;
+  // Fill arc is ALWAYS ≤ 180° of the full circle (half-circle gauge), so
+  // large-arc-flag must be 0 — otherwise the path takes the long way
+  // around the bottom and renders outside the visible viewBox.
+  const fillPath=`M 30 140 A 120 120 0 0 1 ${endX.toFixed(2)} ${endY.toFixed(2)}`;
   const subColor=(kind==='tw'&&sub==='ON TARGET')?'#22c55e':
                  (color==='#ef4444')?'#ef4444':'#9494a0';
   let h=`<path d="M 30 140 A 120 120 0 1 1 270 140" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="14" stroke-linecap="round"/>`;
@@ -405,7 +407,13 @@ const SIL={
   cNose:811, cTail:7401,
   // Car ARTWORK vertical bounds
   cArtTop:2453,
-  cArtBottom:4515,   // bottom of visible wheel circles (not path endpoints)
+  // cArtBottom: y of the visible bottom of the tires in car-SVG units.
+  // Set empirically from rendered output — the previous value (4515) was
+  // the bottom of the wheel circle path bounding box, but visible tire
+  // bottoms sit higher because the wheels are inset above the path extent.
+  // If you re-trace the car art, eyeball where the tire actually touches
+  // the ground in the SVG and update this number.
+  cArtBottom:4200,
   // Shared real-world scale
   unitsPerInch:35.6653,
   trailerEl:null, carEl:null, ready:false
@@ -534,28 +542,21 @@ function draw(p){
   }
 
   // ── Gear dots — aligned to the trailer floor (deck top) ──
-  const gearY=gY-deckPx-2;                   // 2 px above deck top so dots sit on the floor
+  // Sit them just above deck so they rest on the floor. With larger radius,
+  // raise the y so the bottom of the dot touches the deck rather than its
+  // center being on the deck (otherwise half the dot disappears below).
+  const gearDotR=28;
+  const gearY=gY-deckPx-gearDotR;
   gear.forEach(g=>{
     if(!document.getElementById('ck_'+g.id)?.checked)return;
     const pos=parseFloat(document.getElementById('ps_'+g.id)?.value)||0;
-    h+=`<circle cx="${bx(pos)}" cy="${gearY}" r="3.5" fill="#f59e0b" opacity="0.95" stroke="#0f0f10" stroke-width="0.5"/>`;
+    h+=`<circle cx="${bx(pos)}" cy="${gearY}" r="${gearDotR}" fill="#f59e0b" opacity="0.95" stroke="#0f0f10" stroke-width="2"/>`;
   });
 
   // ── Car CG marker — solid vertical down to deck, bold green label.
-  // Also annotate horizontal distance from CG to axle midpoint — this is
-  // the lever arm that drives tongue weight, so it earns a real dimension.
   const cCG=(p.cFA*fv('carFW')+p.cRA*fv('carRW'))/(fv('carFW')+fv('carRW'));
   const cgx=bx(cCG);
-  const amx=bx(p.amid);
   h+=`<line x1="${cgx}" y1="${boxTopY+10}" x2="${cgx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.85"/>`;
-  // CG → axle-mid horizontal dimension, just below box ceiling
-  const cgDimY=boxTopY+18;
-  const cgDist=cCG-p.amid;
-  if(Math.abs(cgDist)>1){
-    h+=`<line x1="${cgx}" y1="${cgDimY}" x2="${amx}" y2="${cgDimY}" stroke="#34d399" stroke-width="0.8" marker-end="url(#ar)" marker-start="url(#ar)" opacity="0.85"/>`;
-    const sign=cgDist>0?'+':'−';
-    h+=`<text x="${(cgx+amx)/2}" y="${cgDimY-3}" text-anchor="middle" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif">${sign}${Math.abs(cgDist).toFixed(1)}" from axle mid</text>`;
-  }
   h+=`<text x="${cgx+4}" y="${labelY}" text-anchor="start" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif">car CG</text>`;
 
   // ── Nose gap annotation — bold orange to match gear dots, at 2/3 box height ──
