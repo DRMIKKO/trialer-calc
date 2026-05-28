@@ -81,11 +81,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 <body>
 
 <div id="sticky">
-  <div class="hdr-row">
-    <span class="hdr-title">Tongue Weight Calc</span>
-    <span class="hdr-tw" id="htw">— lb TW</span>
-  </div>
-  <div id="banner" class="ok">Calculating…</div>
   <div class="metrics" style="grid-template-columns:1fr 1fr">
     <!-- TW combined cell -->
     <div class="metric-pie">
@@ -116,7 +111,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
   </div>
   <div class="istrip" id="istrip"></div>
   <div class="dgwrap">
-    <svg id="svg" width="100%" viewBox="0 0 680 150" role="img">
+    <svg id="svg" width="100%" viewBox="0 0 680 260" role="img">
       <title>Trailer load diagram</title>
       <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
     </svg>
@@ -368,17 +363,19 @@ function calc(){
     gpPe.className='pie-pct'+(gtw>GLIM?' bad':gtw>GLIM*0.9?' warn':' ok');
     drawPie('gtw-pie',gtwPct,gtwColor);
 
-    // Header
+    // Header (removed from DOM — guarded)
     const hw=document.getElementById('htw');
-    hw.textContent=tot+' lb TW';hw.className='hdr-tw'+(tot>LIM?' bad':tot>WRN?' warn':'');
+    if(hw){hw.textContent=tot+' lb TW';hw.className='hdr-tw'+(tot>LIM?' bad':tot>WRN?' warn':'');}
 
-    // Banner
+    // Banner (removed from DOM — guarded)
     const bn=document.getElementById('banner');
-    let msg=tot>LIM?`TW over by ${-rem} lbs — slide car rearward or move heavy gear aft of axle midpoint`:
-            tot>WRN?`TW close to limit — ${rem} lbs remaining, verify with tongue scale`:
-            `TW OK — ${rem} lbs of headroom`;
-    if(gtw>GLIM)msg+=' · GTW over by '+(gtw-GLIM)+' lbs';
-    bn.textContent=msg;bn.className=(tot>LIM||gtw>GLIM)?'bad':tot>WRN?'warn':'ok';
+    if(bn){
+      let msg=tot>LIM?`TW over by ${-rem} lbs — slide car rearward or move heavy gear aft of axle midpoint`:
+              tot>WRN?`TW close to limit — ${rem} lbs remaining, verify with tongue scale`:
+              `TW OK — ${rem} lbs of headroom`;
+      if(gtw>GLIM)msg+=' · GTW over by '+(gtw-GLIM)+' lbs';
+      bn.textContent=msg;bn.className=(tot>LIM||gtw>GLIM)?'bad':tot>WRN?'warn':'ok';
+    }
 
     // Info strip
     document.getElementById('istrip').innerHTML=
@@ -390,9 +387,112 @@ function calc(){
       `<span>Gear TW <strong>${Math.round(twG)} lbs</strong></span>`+
       `<span>Trailer TW est <strong>${Math.round(twT)} lbs</strong></span>`;
 
-    draw({h2b,bl,tFA,tRA,amid,nd,cFA,cRA,cTail,tot,tc});
+    draw({h2b,bl,tFA,tRA,amid,nd,cFA,cRA,cTail,tot,tc,no,wb,to});
     setOff();
   }catch(e){console.error('calc error',e);}
+}
+
+// ── Silhouette asset cache ──
+// Both SVGs share a coordinate system at 35.6653 SVG-units per inch.
+// Anchor points are documented in each file's header comment; the
+// constants below are extracted from those.
+const SIL={
+  // Trailer file horizontal anchors (SVG units in its own viewBox)
+  tCoupler:1703.44, tBoxFront:3287.44, tBoxRear:11918.44,
+  tFAxle:7751.44, tRAxle:9389.44,
+  // Trailer ARTWORK vertical bounds (extracted from actual path data — not viewBox)
+  tArtTop:5154,      // y of trailer roof in SVG units
+  tArtBottom:6310,   // y of wheel bottoms in SVG units (= ground reference)
+  // Car file horizontal anchors
+  cFAxle:2112.18, cRAxle:5838.33,
+  cNose:811, cTail:7401,
+  // Car ARTWORK vertical bounds
+  cArtTop:2453,
+  cArtBottom:4515,   // bottom of visible wheel circles (not path endpoints)
+  // Shared real-world scale
+  unitsPerInch:35.6653,
+  trailerEl:null, carEl:null, ready:false
+};
+
+async function loadSilhouettes(){
+  try{
+    const [tRes,cRes]=await Promise.all([
+      fetch('trailer-silhouette.svg'),
+      fetch('car-silhouette.svg')
+    ]);
+    const tTxt=await tRes.text(), cTxt=await cRes.text();
+    const parser=new DOMParser();
+    SIL.trailerEl=parser.parseFromString(tTxt,'image/svg+xml').documentElement;
+    SIL.carEl=parser.parseFromString(cTxt,'image/svg+xml').documentElement;
+    SIL.ready=true;
+    calc(); // redraw once assets are available
+  }catch(e){console.error('silhouette load failed',e);}
+}
+
+// Class → explicit attribute maps. Trailer and car files happen to use the
+// SAME class names (st1, st2, etc.) for different things, so we need separate
+// maps per file. Apply inline because the embedded <style> block doesn't
+// reliably cascade once the SVG is parsed and injected into the calculator's DOM.
+const TRAILER_CLASS_ATTRS={
+  st0:{opacity:'.9'},
+  st1:{fill:'none',stroke:'#1a1a1a','stroke-width':'.79','opacity':'.7'},
+  st2:{fill:'none',stroke:'#1a1a1a','stroke-width':'.79','opacity':'.6'},
+  st3:{fill:'none',stroke:'#5a6975','stroke-width':'.79','opacity':'.6'},
+  st4:{fill:'none',stroke:'#888','stroke-width':'.4','opacity':'.3'},
+  st6:{fill:'#3a4855'},
+  st8:{fill:'#1f2a36'},
+  st9:{fill:'#1a1a1a'},
+  st10:{display:'none'},
+};
+const CAR_CLASS_ATTRS={
+  st0:{fill:'none','stroke-width':'0'},     // outline reference layer — neutralize
+  st1:{fill:'#fff',opacity:'.7'},           // visible car body
+  st2:{fill:'#fff',opacity:'.19'},          // detail highlights
+  st3:{opacity:'.15'},                       // Generative_Object wrapper
+  st4:{opacity:'.45'},                       // Fill wrapper
+};
+
+function silInner(srcEl,classMap){
+  const clone=srcEl.cloneNode(true);
+  // Strip reference/hidden/generative layers entirely
+  clone.querySelectorAll('#Dimensions, #Hidden, #Layer_2').forEach(n=>n.remove());
+  // Walk the tree and convert class-based styles to inline attributes
+  clone.querySelectorAll('[class]').forEach(n=>{
+    const classes=(n.getAttribute('class')||'').split(/\s+/);
+    classes.forEach(c=>{
+      const attrs=classMap[c];
+      if(attrs)Object.keys(attrs).forEach(k=>{
+        if(!n.hasAttribute(k))n.setAttribute(k,attrs[k]);
+      });
+    });
+    n.removeAttribute('class');
+  });
+  // Drop any <style> block from inside the silhouette
+  clone.querySelectorAll('style').forEach(n=>n.remove());
+  // ── Targeted overrides (trailer only) ──
+  // The door panel inside box-body needs to be a touch lighter than the box body.
+  // The fender/wheels group should be a touch darker for visual separation.
+  const fenderGroup=clone.querySelector('#fender-and-wheels');
+  if(fenderGroup){
+    fenderGroup.querySelectorAll('*').forEach(n=>{
+      const f=n.getAttribute('fill');
+      if(f==='#1f2a36')n.setAttribute('fill','#141c25');   // wheel/fender body — darker
+      if(f==='#3a4855')n.setAttribute('fill','#2a3744');   // fender accent — darker
+    });
+  }
+  // The "door panel" inside box-body is the rect with st6 (lighter accent) —
+  // bump it slightly lighter for legibility.
+  const boxBody=clone.querySelector('#box-body');
+  if(boxBody){
+    boxBody.querySelectorAll('rect').forEach(n=>{
+      const f=n.getAttribute('fill');
+      if(f==='#3a4855')n.setAttribute('fill','#4a5765');   // door panel — lighter
+    });
+  }
+  return Array.from(clone.childNodes).map(n=>{
+    if(n.nodeType===Node.ELEMENT_NODE)return n.outerHTML;
+    return '';
+  }).join('');
 }
 
 function draw(p){
@@ -400,60 +500,64 @@ function draw(p){
   const xL=50,xR=656,span=p.h2b+p.bl+8;
   const sx=fh=>xL+(fh/span)*(xR-xL);
   const bx=fb=>sx(p.h2b+fb);
-  const tY=72,tH=30,gY=tY+tH+18,cY=tY-28,cH=24,lY=gY+16;
+  const pxPerIn=(xR-xL)/span;
   const tot=parseInt(document.getElementById('rtw').textContent)||0;
-  const tc=tot>LIM?'#f87171':tot>WRN?'#fbbf24':'#34d399';
-  const cc=p.tc>=0?'#34d399':'#f87171';
   const hx=sx(0);
+
+  // Vertical layout
+  const gY=230;                              // ground line y
+  const boxHeightPx=84*pxPerIn;              // 84" exterior box height
+  const deckPx=17*pxPerIn;                   // 17" deck height above ground
+  const boxTopY=gY-deckPx-boxHeightPx;       // top of trailer box
+  // Labels positioned 2/3 of the way down the box interior
+  const labelY=boxTopY+(boxHeightPx*0.67);
+
   let h=`<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
-  // ground
-  h+=`<line x1="${sx(0)}" y1="${gY}" x2="${bx(p.bl)}" y2="${gY}" stroke="#2e2e34" stroke-width="1"/>`;
-  // hitch
-  h+=`<polygon points="${hx},${tY+tH/2-4} ${hx-10},${tY+tH/2+7} ${hx+2},${tY+tH/2+7}" fill="#222226" stroke="#3e3e46" stroke-width="0.5"/>`;
-  h+=`<text x="${hx-5}" y="${gY+13}" text-anchor="middle" font-size="8" fill="#5c5c6a" font-family="DM Sans,sans-serif">hitch</text>`;
-  // trailer box
-  h+=`<rect x="${bx(0)}" y="${tY}" width="${bx(p.bl)-bx(0)}" height="${tH}" rx="3" fill="#18181b" stroke="#2e2e34" stroke-width="1"/>`;
-  // axles + wheels
-  [p.tFA,p.tRA].forEach(ax=>{
-    const x=bx(ax);
-    h+=`<line x1="${x}" y1="${tY+tH}" x2="${x}" y2="${gY+4}" stroke="#9494a0" stroke-width="2" stroke-linecap="round"/>`;
-    h+=`<circle cx="${x}" cy="${gY+5}" r="5" fill="#18181b" stroke="#9494a0" stroke-width="1.5"/>`;
-  });
-  // axle midpoint
-  const mx=bx(p.amid);
-  h+=`<line x1="${mx}" y1="${tY-10}" x2="${mx}" y2="${gY+11}" stroke="#4f8ef7" stroke-width="1" stroke-dasharray="4 3"/>`;
-  h+=`<text x="${mx}" y="${tY-13}" text-anchor="middle" font-size="8" fill="#4f8ef7" font-family="DM Sans,sans-serif">axle mid</text>`;
-  // gear dots inside trailer box
+
+  // ── Trailer silhouette ──
+  if(SIL.ready){
+    const tSpan=(SIL.tBoxRear-SIL.tCoupler);
+    const tSpanReal=p.h2b+p.bl;
+    const tScale=(tSpanReal*pxPerIn)/tSpan;
+    const tDx=hx-(SIL.tCoupler*tScale);
+    const tDy=gY-(SIL.tArtBottom*tScale);
+    h+=`<g transform="translate(${tDx.toFixed(2)},${tDy.toFixed(2)}) scale(${tScale.toFixed(5)})">${silInner(SIL.trailerEl,TRAILER_CLASS_ATTRS)}</g>`;
+  }else{
+    h+=`<rect x="${bx(0)}" y="${boxTopY}" width="${bx(p.bl)-bx(0)}" height="${boxHeightPx}" rx="3" fill="#3d4a55" opacity="0.4"/>`;
+  }
+
+  // ── Car silhouette ──
+  if(SIL.ready){
+    const cSpan=(SIL.cTail-SIL.cNose);
+    const cSpanReal=p.no+p.wb+p.to;
+    const cScale=(cSpanReal*pxPerIn)/cSpan;
+    const carNosePx=bx(p.nd);
+    const cDx=carNosePx-(SIL.cNose*cScale);
+    const cDy=(gY-deckPx)-(SIL.cArtBottom*cScale);
+    h+=`<g transform="translate(${cDx.toFixed(2)},${cDy.toFixed(2)}) scale(${cScale.toFixed(5)})">${silInner(SIL.carEl,CAR_CLASS_ATTRS)}</g>`;
+  }
+
+  // ── Gear dots — aligned to the trailer floor (deck top) ──
+  const gearY=gY-deckPx-2;                   // 2 px above deck top so dots sit on the floor
   gear.forEach(g=>{
     if(!document.getElementById('ck_'+g.id)?.checked)return;
     const pos=parseFloat(document.getElementById('ps_'+g.id)?.value)||0;
-    h+=`<circle cx="${bx(pos)}" cy="${tY+tH/2}" r="3.5" fill="#f59e0b" opacity="0.8"/>`;
+    h+=`<circle cx="${bx(pos)}" cy="${gearY}" r="3.5" fill="#f59e0b" opacity="0.95" stroke="#0f0f10" stroke-width="0.5"/>`;
   });
-  // car — drawn above trailer box, label inside car rect only
-  const cx1=bx(p.nd),cx2=bx(p.cTail);
-  const carW=Math.max(cx2-cx1,2);
-  h+=`<rect x="${cx1}" y="${cY}" width="${carW}" height="${cH}" rx="3" fill="${cc}" opacity="0.12" stroke="${cc}" stroke-width="1"/>`;
-  // only draw label if car is wide enough
-  if(carW>60){
-    h+=`<text x="${(cx1+cx2)/2}" y="${cY+cH/2}" text-anchor="middle" dominant-baseline="central" font-size="9" fill="${cc}" font-family="DM Sans,sans-serif">race car</text>`;
-  }
-  // car axle marks
-  [p.cFA,p.cRA].forEach(ax=>{
-    const x=bx(ax);
-    h+=`<line x1="${x}" y1="${cY+cH}" x2="${x}" y2="${tY}" stroke="${cc}" stroke-width="1" stroke-dasharray="3 2" opacity="0.45"/>`;
-    h+=`<circle cx="${x}" cy="${cY+cH}" r="2" fill="${cc}" opacity="0.7"/>`;
-  });
-  // TW arrow
-  h+=`<line x1="${hx-4}" y1="${tY+tH/2-15}" x2="${hx-4}" y2="${tY+tH/2-4}" stroke="${tc}" stroke-width="2" marker-end="url(#ar)"/>`;
-  h+=`<text x="${hx-8}" y="${tY+tH/2-18}" text-anchor="end" font-size="9" font-weight="500" fill="${tc}" font-family="DM Mono,monospace">${tot} lb</text>`;
-  // nose gap annotation
+
+  // ── Car CG marker — dashed vertical down to deck, color matches upper metrics ──
+  const cCG=(p.cFA*fv('carFW')+p.cRA*fv('carRW'))/(fv('carFW')+fv('carRW'));
+  const cgx=bx(cCG);
+  h+=`<line x1="${cgx}" y1="${boxTopY+10}" x2="${cgx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1" stroke-dasharray="3 2" opacity="0.7"/>`;
+  h+=`<text x="${cgx+4}" y="${labelY}" text-anchor="start" font-size="8" fill="#34d399" font-family="DM Sans,sans-serif">car CG</text>`;
+
+  // ── Nose gap annotation — bold orange to match gear dots, at 2/3 box height ──
   if(p.nd>2){
-    const n1=bx(0),n2=bx(p.nd),ny=cY-5;
-    h+=`<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#5c5c6a" stroke-width="0.5" marker-end="url(#ar)" marker-start="url(#ar)"/>`;
-    h+=`<text x="${(n1+n2)/2}" y="${ny-3}" text-anchor="middle" font-size="8" fill="#5c5c6a" font-family="DM Sans,sans-serif">${p.nd.toFixed(1)}"</text>`;
+    const n1=bx(0),n2=bx(p.nd),ny=labelY+4;
+    h+=`<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#f59e0b" stroke-width="0.8" marker-end="url(#ar)" marker-start="url(#ar)" opacity="0.85"/>`;
+    h+=`<text x="${(n1+n2)/2}" y="${ny-3}" text-anchor="middle" font-size="9" font-weight="600" fill="#f59e0b" font-family="DM Sans,sans-serif">${p.nd.toFixed(1)}"</text>`;
   }
-  // box label
-  h+=`<text x="${(bx(0)+bx(p.bl))/2}" y="${lY}" text-anchor="middle" font-size="8" fill="#5c5c6a" font-family="DM Sans,sans-serif">box ${p.bl}" · axle mid at ${p.amid.toFixed(1)}"</text>`;
+
   svg.innerHTML=h;
 }
 
@@ -467,6 +571,7 @@ function wire(){
 
 document.addEventListener('DOMContentLoaded',()=>{
   load();buildGear();wire();calc();
+  loadSilhouettes();
   window.addEventListener('resize',setOff);
 });
 </script>
