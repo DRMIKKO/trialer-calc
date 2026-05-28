@@ -23,13 +23,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .mval{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;color:var(--tx);transition:color .2s;line-height:1.1}
 .mval.ok{color:var(--ok)}.mval.warn{color:var(--wn)}.mval.bad{color:var(--bad)}
 .munit{font-size:.58rem;color:var(--tx3)}
-/* pie metric */
-.metric-pie{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.35rem .55rem;display:flex;align-items:center;gap:.5rem}
-.pie-info{flex:1;min-width:0}
-.pie-pct{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;line-height:1.1;transition:color .2s}
-.pie-pct.ok{color:var(--ok)}.pie-pct.warn{color:var(--wn)}.pie-pct.bad{color:var(--bad)}
-.pie-sublbl{font-size:.56rem;color:var(--tx3)}
-.pie-svg{flex-shrink:0;width:38px;height:38px}
+/* F2 half-circle gauge metric card */
+.metric-f2{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.4rem .5rem .15rem;display:flex;flex-direction:column;align-items:center;min-width:0}
+.f2-lbl{font-size:.58rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;align-self:flex-start;margin-bottom:.1rem}
+.f2-svg{width:100%;height:auto;max-height:115px;display:block}
 .istrip{display:flex;flex-wrap:wrap;gap:.2rem .8rem;padding:.3rem 1rem;font-size:.65rem;color:var(--tx3);border-bottom:1px solid var(--bd)}
 .istrip strong{color:var(--tx2);font-weight:500}
 .dgwrap{padding:0 1rem .35rem;background:var(--bg)}
@@ -82,31 +79,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 
 <div id="sticky">
   <div class="metrics" style="grid-template-columns:1fr 1fr">
-    <!-- TW combined cell -->
-    <div class="metric-pie">
-      <div class="pie-info">
-        <div class="mlbl">Tongue weight</div>
-        <div class="mlim">600 lb max · <span id="rrem">—</span> lbs headroom</div>
-        <div class="mval" id="rtw" style="font-size:1.25rem">—</div>
-        <div style="display:flex;align-items:baseline;gap:.3rem;margin-top:1px">
-          <span class="pie-pct" id="tw-pct" style="font-size:.82rem">—</span>
-          <span class="munit">of limit</span>
-        </div>
-      </div>
-      <svg class="pie-svg" id="tw-pie" viewBox="0 0 38 38"></svg>
+    <!-- TW F2 half-circle gauge -->
+    <div class="metric-f2">
+      <div class="f2-lbl">Tongue weight · target 600 lb</div>
+      <svg class="f2-svg" id="tw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
-    <!-- GTW combined cell -->
-    <div class="metric-pie">
-      <div class="pie-info">
-        <div class="mlbl">Gross trailer wt</div>
-        <div class="mlim">7,715 lb max</div>
-        <div class="mval" id="rgtw" style="font-size:1.25rem">—</div>
-        <div style="display:flex;align-items:baseline;gap:.3rem;margin-top:1px">
-          <span class="pie-pct" id="gtw-pct" style="font-size:.82rem">—</span>
-          <span class="munit">of limit</span>
-        </div>
-      </div>
-      <svg class="pie-svg" id="gtw-pie" viewBox="0 0 38 38"></svg>
+    <!-- GTW F2 half-circle gauge -->
+    <div class="metric-f2">
+      <div class="f2-lbl">Gross trailer wt · limit 7,715 lb</div>
+      <svg class="f2-svg" id="gtw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg>
     </div>
   </div>
   <div class="istrip" id="istrip"></div>
@@ -209,21 +190,61 @@ function showTab(n,btn){
   btn.classList.add('active');
 }
 
-// ── Pie chart helper ──
-function drawPie(svgId, pct, color){
+// ── F2 half-circle gauge ──
+// kind: 'tw' uses target=600 with center-tick + over/under semantics; 'gtw' uses limit=7715 with simple fill.
+function drawGauge(svgId, value, kind){
   const svg=document.getElementById(svgId);
   if(!svg)return;
-  const r=16, cx=19, cy=19, circ=2*Math.PI*r;
-  const clamped=Math.min(Math.max(pct,0),1);
-  const dash=clamped*circ;
-  const gap=circ-dash;
-  // background ring
-  let h=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#2e2e34" stroke-width="5"/>`;
-  // filled arc (starts at top)
-  h+=`<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${color}" stroke-width="5"
-    stroke-dasharray="${dash.toFixed(2)} ${gap.toFixed(2)}"
-    stroke-dashoffset="${(circ*0.25).toFixed(2)}"
-    stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})" style="transition:stroke-dasharray .4s"/>`;
+  let max, hero, sub, color, showTick;
+  if(kind==='tw'){
+    const TARGET=LIM;            // 600
+    max=TARGET*2;                // 1200, so target sits at 12 o'clock
+    showTick=true;
+    const dev=value-TARGET;
+    const pct=Math.round((dev/TARGET)*100);
+    if(value>TARGET){
+      color='#ef4444';
+      hero=Math.round(value)+' lb';
+      sub=`+${Math.abs(Math.round(dev))} lb over · +${Math.abs(pct)}%`;
+    }else if(Math.abs(dev)<=1){
+      color='#22c55e';
+      hero=Math.round(value)+' lb';
+      sub='ON TARGET';
+    }else{
+      color='#eab308';
+      hero=Math.round(value)+' lb';
+      sub=`−${Math.abs(Math.round(dev))} lb under · −${Math.abs(pct)}%`;
+    }
+  }else{ // gtw
+    max=GLIM;
+    showTick=false;
+    if(value>GLIM){
+      color='#ef4444';
+      hero=value.toLocaleString()+' lb';
+      sub=`+${(value-GLIM).toLocaleString()} lb over limit`;
+    }else{
+      color='#22c55e';
+      hero=value.toLocaleString()+' lb';
+      sub=`${value.toLocaleString()} / ${GLIM.toLocaleString()} lbs`;
+    }
+  }
+  const fraction=Math.min(value/max,1);
+  const angleRad=(180+fraction*180)*Math.PI/180;
+  const endX=150+120*Math.cos(angleRad);
+  const endY=140+120*Math.sin(angleRad);
+  const largeArc=fraction>0.5?1:0;
+  const fillPath=`M 30 140 A 120 120 0 ${largeArc} 1 ${endX.toFixed(2)} ${endY.toFixed(2)}`;
+  const subColor=(kind==='tw'&&sub==='ON TARGET')?'#22c55e':
+                 (color==='#ef4444')?'#ef4444':'#9494a0';
+  let h=`<path d="M 30 140 A 120 120 0 1 1 270 140" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="14" stroke-linecap="round"/>`;
+  if(fraction>0){
+    h+=`<path d="${fillPath}" fill="none" stroke="${color}" stroke-width="14" stroke-linecap="round" style="transition:d .35s,stroke .25s"/>`;
+  }
+  if(showTick){
+    h+=`<line x1="150" y1="14" x2="150" y2="36" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
+  }
+  h+=`<text x="150" y="115" text-anchor="middle" font-family="DM Mono,monospace" font-size="34" font-weight="500" fill="${color}" style="transition:fill .25s">${hero}</text>`;
+  h+=`<text x="150" y="138" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" font-weight="500" fill="${subColor}">${sub}</text>`;
   svg.innerHTML=h;
 }
 
@@ -335,33 +356,10 @@ function calc(){
     const tot=Math.round(twCar+twG+twT);
     const gtw=Math.round(twt+cFW+cRW+gWt);
     const rem=LIM-tot;
-    const twPct=tot/LIM;
-    const gtwPct=gtw/GLIM;
 
-    // TW color
-    const twColor=tot>LIM?'#f87171':tot>WRN?'#fbbf24':'#34d399';
-    const gtwColor=gtw>GLIM?'#f87171':gtw>GLIM*0.9?'#fbbf24':'#34d399';
-
-    // Metrics
-    const te=document.getElementById('rtw');
-    te.textContent=tot;te.className='mval'+(tot>LIM?' bad':tot>WRN?' warn':' ok');
-
-    const ge=document.getElementById('rgtw');
-    ge.textContent=gtw.toLocaleString();ge.className='mval'+(gtw>GLIM?' bad':'');
-
-    const re=document.getElementById('rrem');
-    re.textContent=rem;re.className='mval'+(rem<0?' bad':rem<60?' warn':' ok');
-
-    // Pie charts
-    const twPe=document.getElementById('tw-pct');
-    twPe.textContent=Math.round(twPct*100)+'%';
-    twPe.className='pie-pct'+(tot>LIM?' bad':tot>WRN?' warn':' ok');
-    drawPie('tw-pie',twPct,twColor);
-
-    const gpPe=document.getElementById('gtw-pct');
-    gpPe.textContent=Math.round(gtwPct*100)+'%';
-    gpPe.className='pie-pct'+(gtw>GLIM?' bad':gtw>GLIM*0.9?' warn':' ok');
-    drawPie('gtw-pie',gtwPct,gtwColor);
+    // F2 half-circle gauges
+    drawGauge('tw-pie',tot,'tw');
+    drawGauge('gtw-pie',gtw,'gtw');
 
     // Header (removed from DOM — guarded)
     const hw=document.getElementById('htw');
@@ -377,15 +375,14 @@ function calc(){
       bn.textContent=msg;bn.className=(tot>LIM||gtw>GLIM)?'bad':tot>WRN?'warn':'ok';
     }
 
-    // Info strip
+    // Info strip — slimmed down: only show what's NOT already in the diagram.
+    // (Nose gap and Car CG are annotated in the SVG; axle-mid is geometric and rarely needed.)
     document.getElementById('istrip').innerHTML=
-      `<span>Nose gap <strong>${nd.toFixed(1)}"</strong></span>`+
       `<span>Tail clearance <strong>${tc.toFixed(1)}"</strong></span>`+
-      `<span>Car CG <strong>${cCG.toFixed(1)}" from box front</strong></span>`+
-      `<span>Axle mid <strong>${amid.toFixed(1)}" from box front</strong></span>`+
       `<span>Car TW <strong>${Math.round(twCar)} lbs</strong></span>`+
       `<span>Gear TW <strong>${Math.round(twG)} lbs</strong></span>`+
-      `<span>Trailer TW est <strong>${Math.round(twT)} lbs</strong></span>`;
+      `<span>Trailer TW est <strong>${Math.round(twT)} lbs</strong></span>`+
+      `<span>Headroom <strong>${rem} lbs</strong></span>`;
 
     draw({h2b,bl,tFA,tRA,amid,nd,cFA,cRA,cTail,tot,tc,no,wb,to});
     setOff();
@@ -440,7 +437,7 @@ const TRAILER_CLASS_ATTRS={
   st3:{fill:'none',stroke:'#5a6975','stroke-width':'.79','opacity':'.6'},
   st4:{fill:'none',stroke:'#888','stroke-width':'.4','opacity':'.3'},
   st6:{fill:'#3a4855'},
-  st8:{fill:'#1f2a36'},
+  st8:{fill:'#2a3845'},
   st9:{fill:'#1a1a1a'},
   st10:{display:'none'},
 };
@@ -476,7 +473,7 @@ function silInner(srcEl,classMap){
   if(fenderGroup){
     fenderGroup.querySelectorAll('*').forEach(n=>{
       const f=n.getAttribute('fill');
-      if(f==='#1f2a36')n.setAttribute('fill','#141c25');   // wheel/fender body — darker
+      if(f==='#2a3845')n.setAttribute('fill','#1a2330');   // wheel/fender body — darker than new body color
       if(f==='#3a4855')n.setAttribute('fill','#2a3744');   // fender accent — darker
     });
   }
@@ -501,7 +498,6 @@ function draw(p){
   const sx=fh=>xL+(fh/span)*(xR-xL);
   const bx=fb=>sx(p.h2b+fb);
   const pxPerIn=(xR-xL)/span;
-  const tot=parseInt(document.getElementById('rtw').textContent)||0;
   const hx=sx(0);
 
   // Vertical layout
@@ -545,11 +541,22 @@ function draw(p){
     h+=`<circle cx="${bx(pos)}" cy="${gearY}" r="3.5" fill="#f59e0b" opacity="0.95" stroke="#0f0f10" stroke-width="0.5"/>`;
   });
 
-  // ── Car CG marker — dashed vertical down to deck, color matches upper metrics ──
+  // ── Car CG marker — solid vertical down to deck, bold green label.
+  // Also annotate horizontal distance from CG to axle midpoint — this is
+  // the lever arm that drives tongue weight, so it earns a real dimension.
   const cCG=(p.cFA*fv('carFW')+p.cRA*fv('carRW'))/(fv('carFW')+fv('carRW'));
   const cgx=bx(cCG);
-  h+=`<line x1="${cgx}" y1="${boxTopY+10}" x2="${cgx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1" stroke-dasharray="3 2" opacity="0.7"/>`;
-  h+=`<text x="${cgx+4}" y="${labelY}" text-anchor="start" font-size="8" fill="#34d399" font-family="DM Sans,sans-serif">car CG</text>`;
+  const amx=bx(p.amid);
+  h+=`<line x1="${cgx}" y1="${boxTopY+10}" x2="${cgx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.85"/>`;
+  // CG → axle-mid horizontal dimension, just below box ceiling
+  const cgDimY=boxTopY+18;
+  const cgDist=cCG-p.amid;
+  if(Math.abs(cgDist)>1){
+    h+=`<line x1="${cgx}" y1="${cgDimY}" x2="${amx}" y2="${cgDimY}" stroke="#34d399" stroke-width="0.8" marker-end="url(#ar)" marker-start="url(#ar)" opacity="0.85"/>`;
+    const sign=cgDist>0?'+':'−';
+    h+=`<text x="${(cgx+amx)/2}" y="${cgDimY-3}" text-anchor="middle" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif">${sign}${Math.abs(cgDist).toFixed(1)}" from axle mid</text>`;
+  }
+  h+=`<text x="${cgx+4}" y="${labelY}" text-anchor="start" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif">car CG</text>`;
 
   // ── Nose gap annotation — bold orange to match gear dots, at 2/3 box height ──
   if(p.nd>2){
