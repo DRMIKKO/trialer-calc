@@ -10,167 +10,137 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
 #sticky{position:fixed;top:0;left:0;right:0;background:var(--bg);z-index:200;border-bottom:1px solid var(--bd)}
-.hdr-row{display:flex;align-items:center;justify-content:space-between;padding:.45rem 1rem;border-bottom:1px solid var(--bd)}
-.hdr-title{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
-.hdr-tw{font-family:'DM Mono',monospace;font-size:1.15rem;font-weight:500;color:var(--ok);transition:color .2s;white-space:nowrap}
-.hdr-tw.warn{color:var(--wn)}.hdr-tw.bad{color:var(--bad)}
-#banner{padding:.3rem 1rem;font-size:.73rem;font-weight:500;border-bottom:1px solid var(--bd);transition:background .2s,color .2s}
-#banner.ok{background:var(--ok-bg);color:var(--ok)}#banner.warn{background:var(--wn-bg);color:var(--wn)}#banner.bad{background:var(--bad-bg);color:var(--bad)}
-.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem;padding:.35rem 1rem;border-bottom:1px solid var(--bd)}
-.metric{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.35rem .55rem;position:relative}
-.mlbl{font-size:.58rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em}
-.mlim{font-size:.56rem;color:var(--tx3);margin-bottom:1px}
-.mval{font-family:'DM Mono',monospace;font-size:1.1rem;font-weight:500;color:var(--tx);transition:color .2s;line-height:1.1}
-.mval.ok{color:var(--ok)}.mval.warn{color:var(--wn)}.mval.bad{color:var(--bad)}
-.munit{font-size:.58rem;color:var(--tx3)}
-/* F2 half-circle gauge metric card */
-.metric-f2{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.4rem .5rem .15rem;display:flex;flex-direction:column;align-items:center;min-width:0}
-.f2-lbl{font-size:.58rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;align-self:flex-start;margin-bottom:.1rem}
-.f2-svg{width:100%;height:auto;max-height:115px;display:block}
-.istrip{display:flex;flex-wrap:wrap;gap:.2rem .8rem;padding:.3rem 1rem;font-size:.65rem;color:var(--tx3);border-bottom:1px solid var(--bd)}
-.istrip strong{color:var(--tx2);font-weight:500}
-.dgwrap{padding:0 1rem .35rem;background:var(--bg)}
+/* Dashboard (sticky): cog + TW hero gauge + diagram(with GTW ground bar) */
+.dash{max-width:680px;margin:0 auto;padding:0 1rem}
+.dash-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.45rem .15rem .1rem}
+.dash-lbl{font-size:.6rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em}
+.cog-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);padding:.35rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s,background .15s;flex-shrink:0}
+.cog-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
+.cog-btn:active{background:var(--bg)}
+.tw-hero{display:block;width:100%;max-width:330px;height:auto;max-height:158px;margin:0 auto}
+.dgwrap{padding:0 0 .35rem;background:var(--bg)}
+/* Setup overlay */
+.overlay{position:fixed;inset:0;z-index:500;display:flex;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.6);overflow-y:auto;padding:1.5rem 1rem 3rem}
+.overlay[hidden]{display:none}
+.overlay-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);width:100%;max-width:480px;margin:auto}
+.overlay-hdr{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;border-bottom:1px solid var(--bd);position:sticky;top:0;background:var(--bg2);border-radius:var(--r2) var(--r2) 0 0;z-index:1}
+.overlay-title{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tx2)}
+.overlay-close{background:none;border:none;color:var(--tx2);font-size:1.05rem;cursor:pointer;line-height:1;padding:.25rem .45rem;border-radius:var(--r)}
+.overlay-close:hover{color:var(--tx);background:var(--bg3)}
+.overlay-body{padding:.2rem 1rem 1rem}
 #body{max-width:680px;margin:0 auto;padding:0 1rem 3rem}
-.tabs{display:flex;border-bottom:1px solid var(--bd);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;background:var(--bg);z-index:10}
-.tabs::-webkit-scrollbar{display:none}
-.tbtn{font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;color:var(--tx3);background:none;border:none;border-bottom:2px solid transparent;padding:.6rem 1rem;cursor:pointer;white-space:nowrap;transition:color .15s,border-color .15s;letter-spacing:.04em}
-.tbtn.active{color:var(--ac);border-bottom-color:var(--ac)}
-.tpanel{display:none}.tpanel.active{display:block}
 .sec{padding:.9rem 0 0}.sec+.sec{border-top:1px solid var(--bd);margin-top:.9rem}
 .stitle{font-size:.63rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:.6rem}
 .frow{display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem}
 .frow label{font-size:.82rem;color:var(--tx2);flex:1;min-width:0}
-.frow input[type=number]{width:72px;padding:.3rem .45rem;font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx);text-align:right;-moz-appearance:textfield;flex-shrink:0}
+.frow input[type=number]{width:72px;padding:.3rem .45rem;font-family:'DM Mono',monospace;font-size:.82rem;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx);text-align:right;-moz-appearance:textfield;flex-shrink:0}
 .frow input[type=number]:focus{outline:none;border-color:var(--ac)}
 .frow input[type=number]::-webkit-outer-spin-button,.frow input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 .funit{font-size:.68rem;color:var(--tx3);width:22px;flex-shrink:0}
-.poscard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);padding:.7rem;margin-bottom:.7rem}
-.poscard-title{font-size:.63rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);margin-bottom:.5rem}
-.srow{display:flex;align-items:center;gap:.7rem;margin-bottom:.2rem}
-.srow label{font-size:.78rem;color:var(--tx2);min-width:140px;flex-shrink:0}
-.srow input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--bd2);outline:none;cursor:pointer}
-.srow input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--ac);cursor:pointer;border:2px solid var(--bg)}
-.srow input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:var(--ac);cursor:pointer;border:2px solid var(--bg)}
-.sval{font-family:'DM Mono',monospace;font-size:.8rem;color:var(--tx);min-width:38px;text-align:right;flex-shrink:0}
-.snote{font-size:.63rem;color:var(--tx3);margin-top:.2rem}
-.glist{display:flex;flex-direction:column;gap:.4rem}
-.gcard{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);padding:.6rem;transition:opacity .15s}
-.gcard.off{opacity:.4}
-.ghdr{display:flex;align-items:center;gap:.45rem;margin-bottom:.45rem}
-.gchk{width:17px;height:17px;flex-shrink:0;accent-color:var(--ac);cursor:pointer}
-.gname{flex:1;min-width:0;font-family:'DM Sans',sans-serif;font-size:.83rem;font-weight:500;color:var(--tx);background:transparent;border:1px solid transparent;border-radius:var(--r);padding:.17rem .32rem;transition:border-color .15s,background .15s}
-.gname:hover{border-color:var(--bd2)}.gname:focus{border-color:var(--ac);background:var(--bg3);outline:none}
-.gwt{display:flex;align-items:center;gap:.28rem;flex-shrink:0}
-.gwt input[type=number]{width:56px;padding:.2rem .38rem;font-family:'DM Mono',monospace;font-size:.8rem;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx);text-align:right;-moz-appearance:textfield}
-.gwt input[type=number]:focus{outline:none;border-color:var(--ac)}
-.gwt input[type=number]::-webkit-outer-spin-button,.gwt input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
-.gwtu{font-size:.66rem;color:var(--tx3)}
-.gsrow{display:flex;align-items:center;gap:.5rem}
-.gslbl{font-size:.66rem;color:var(--tx3);min-width:105px;flex-shrink:0}
-.gsrow input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;background:var(--bd2);outline:none;cursor:pointer}
-.gsrow input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--am);cursor:pointer;border:2px solid var(--bg)}
-.gsrow input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--am);cursor:pointer;border:2px solid var(--bg)}
-.gsval{font-family:'DM Mono',monospace;font-size:.71rem;color:var(--tx2);min-width:33px;text-align:right;flex-shrink:0}
-#savind{font-size:.6rem;color:var(--tx3);text-align:center;padding:.4rem 0 0;opacity:0;transition:opacity .4s}
-#savind.show{opacity:1}
-.gear-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;gap:.5rem}
-.gear-toggles{display:flex;gap:.35rem}
-.gtbtn{font-family:'DM Sans',sans-serif;font-size:.66rem;font-weight:500;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.25rem .55rem;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.03em}
-.gtbtn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
-.gtbtn:active{background:var(--bg)}
 .pos-readout{display:flex;align-items:baseline;gap:.5rem;margin:.2rem 0}
 .pos-readout-val{font-family:'DM Mono',monospace;font-size:1.15rem;font-weight:500;color:var(--ok)}
 .pos-readout-lbl{font-size:.7rem;color:var(--tx3)}
-.gpos{display:flex;align-items:center;gap:.8rem;margin-top:.35rem;padding-left:25px;font-size:.7rem;color:var(--tx3)}
-.gpos-val{font-family:'DM Mono',monospace;color:var(--tx2)}
+/* Cargo grid */
+.cargo-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;gap:.5rem;padding-top:.15rem}
+.cargo-toggles{display:flex;gap:.35rem}
+.gtbtn{font-family:'DM Sans',sans-serif;font-size:.66rem;font-weight:500;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.25rem .55rem;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.03em}
+.gtbtn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
+.gtbtn:active{background:var(--bg)}
+.snote{font-size:.63rem;color:var(--tx3);margin-top:.2rem}
+.cargo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.45rem}
+.ccell{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);padding:.5rem .55rem;transition:opacity .15s,border-color .15s,background .15s}
+.ccell.off{opacity:.42}
+.ccell.hl{border-color:var(--am);background:var(--bg3)}
+.ccell-top{display:flex;align-items:center;gap:.4rem;margin-bottom:.45rem}
+.gchk{width:17px;height:17px;flex-shrink:0;accent-color:var(--ac);cursor:pointer}
+.cname{flex:1;min-width:0;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;color:var(--tx);background:transparent;border:1px solid transparent;border-radius:var(--r);padding:.15rem .3rem;transition:border-color .15s,background .15s}
+.cname:hover{border-color:var(--bd2)}.cname:focus{border-color:var(--ac);background:var(--bg3);outline:none}
+.ccell-wt{display:flex;align-items:center;gap:.3rem}
+.ccell-wt input[type=number]{flex:1;min-width:0;padding:.2rem .4rem;font-family:'DM Mono',monospace;font-size:.8rem;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx);text-align:right;-moz-appearance:textfield}
+.ccell-wt input[type=number]:focus{outline:none;border-color:var(--ac)}
+.ccell-wt input[type=number]::-webkit-outer-spin-button,.ccell-wt input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+.gwtu{font-size:.66rem;color:var(--tx3);flex-shrink:0}
+#savind{font-size:.6rem;color:var(--tx3);text-align:center;padding:.8rem 0 0;opacity:0;transition:opacity .4s}
+#savind.show{opacity:1}
 /* SVG drag affordances */
 #svg [data-drag]{cursor:grab}
 #svg [data-drag]:active{cursor:grabbing}
 #svg.dragging,#svg.dragging *{cursor:grabbing !important}
+/* Hover-link: cargo cell and its diagram dot subtly co-highlight */
+#svg [data-gear-id]{transition:fill .15s,stroke .15s}
+#svg [data-gear-id].hl{fill:#fbbf24;stroke:#fff;stroke-width:3}
 </style>
 </head>
 <body>
 
 <div id="sticky">
-  <div class="metrics" style="grid-template-columns:1fr 1fr">
-    <!-- TW F2 half-circle gauge -->
-    <div class="metric-f2">
-      <div class="f2-lbl">Tongue weight · target 600 lb</div>
-      <svg class="f2-svg" id="tw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg>
+  <div class="dash">
+    <div class="dash-top">
+      <span class="dash-lbl">Tongue weight · target 600 lb</span>
+      <button class="cog-btn" onclick="openSetup()" aria-label="Open setup" title="Setup">
+        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
     </div>
-    <!-- GTW F2 half-circle gauge -->
-    <div class="metric-f2">
-      <div class="f2-lbl">Gross trailer wt · limit 7,715 lb</div>
-      <svg class="f2-svg" id="gtw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg>
+    <svg class="tw-hero" id="tw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg>
+    <div class="dgwrap">
+      <svg id="svg" width="100%" viewBox="0 0 680 260" role="img">
+        <title>Trailer load diagram</title>
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+      </svg>
     </div>
-  </div>
-  <div class="istrip" id="istrip"></div>
-  <div class="dgwrap">
-    <svg id="svg" width="100%" viewBox="0 0 680 260" role="img">
-      <title>Trailer load diagram</title>
-      <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
-    </svg>
   </div>
 </div>
 
 <div id="body">
-  <div class="tabs" id="tabs">
-    <button class="tbtn active" onclick="showTab('car',this)">Car</button>
-    <button class="tbtn" onclick="showTab('trailer',this)">Trailer</button>
-    <button class="tbtn" onclick="showTab('gear',this)">Gear</button>
+  <input type="hidden" id="nsl" value="57.5">
+  <div class="cargo-hdr">
+    <span class="stitle" style="margin:0">Cargo</span>
+    <div class="cargo-toggles">
+      <button class="gtbtn" onclick="toggleAllGear(true)">All on</button>
+      <button class="gtbtn" onclick="toggleAllGear(false)">All off</button>
+    </div>
   </div>
+  <div class="snote" style="margin-bottom:.6rem">Check to include · tap name to edit · set weight · drag dots in the diagram to position</div>
+  <div class="cargo-grid" id="glist"></div>
+  <div id="savind">Saved</div>
+</div>
 
-  <div class="tpanel active" id="tab-car">
-    <div class="sec">
-      <div class="poscard">
-        <div class="poscard-title">Car position</div>
+<!-- Setup overlay (behind the cog): car + trailer config -->
+<div id="setup-overlay" class="overlay" hidden onclick="if(event.target===this)closeSetup()">
+  <div class="overlay-card">
+    <div class="overlay-hdr">
+      <span class="overlay-title">Setup</span>
+      <button class="overlay-close" onclick="closeSetup()" aria-label="Close setup">&#10005;</button>
+    </div>
+    <div class="overlay-body">
+      <div class="sec" style="padding-top:.4rem">
+        <div class="stitle">Race car weights</div>
+        <div class="frow"><label>Front axle weight</label><input type="number" id="carFW" value="1980" step="5"><span class="funit">lbs</span></div>
+        <div class="frow"><label>Rear axle weight</label><input type="number" id="carRW" value="1217" step="5"><span class="funit">lbs</span></div>
+      </div>
+      <div class="sec">
+        <div class="stitle">Race car dimensions</div>
+        <div class="frow"><label>Wheelbase</label><input type="number" id="wb" value="103.5" step="0.5"><span class="funit">in</span></div>
+        <div class="frow"><label>Nose overhang (nose to front axle)</label><input type="number" id="no" value="39" step="0.5"><span class="funit">in</span></div>
+        <div class="frow"><label>Tail overhang (rear axle to tail)</label><input type="number" id="to" value="38" step="0.5"><span class="funit">in</span></div>
+      </div>
+      <div class="sec">
+        <div class="stitle">Trailer dimensions</div>
+        <div class="frow"><label>Hitch to front of box</label><input type="number" id="h2b" value="44" step="0.5"><span class="funit">in</span></div>
+        <div class="frow"><label>Front of box to front axle</label><input type="number" id="b2a" value="124" step="0.5"><span class="funit">in</span></div>
+        <div class="frow"><label>Axle spread (center to center)</label><input type="number" id="asp" value="45.5" step="0.5"><span class="funit">in</span></div>
+        <div class="frow"><label>Rear axle to rear of box</label><input type="number" id="a2e" value="72.5" step="0.5"><span class="funit">in</span></div>
+        <div class="frow"><label>Trailer empty weight</label><input type="number" id="twt" value="2510" step="10"><span class="funit">lbs</span></div>
+      </div>
+      <div class="sec">
+        <div class="stitle">Car position</div>
         <div class="pos-readout">
           <span class="pos-readout-val"><span id="nv">57.5</span>"</span>
-          <span class="pos-readout-lbl">from front of box</span>
-        </div>
-        <div class="snote">Drag the car in the diagram to reposition · auto-clamps inside box</div>
-      </div>
-      <input type="hidden" id="nsl" value="57.5">
-    </div>
-    <div class="sec">
-      <div class="stitle">Race car weights</div>
-      <div class="frow"><label>Front axle weight</label><input type="number" id="carFW" value="1980" step="5"><span class="funit">lbs</span></div>
-      <div class="frow"><label>Rear axle weight</label><input type="number" id="carRW" value="1217" step="5"><span class="funit">lbs</span></div>
-    </div>
-    <div class="sec">
-      <div class="stitle">Race car dimensions</div>
-      <div class="frow"><label>Wheelbase</label><input type="number" id="wb" value="103.5" step="0.5"><span class="funit">in</span></div>
-      <div class="frow"><label>Nose overhang (nose to front axle)</label><input type="number" id="no" value="39" step="0.5"><span class="funit">in</span></div>
-      <div class="frow"><label>Tail overhang (rear axle to tail)</label><input type="number" id="to" value="38" step="0.5"><span class="funit">in</span></div>
-    </div>
-  </div>
-
-  <div class="tpanel" id="tab-trailer">
-    <div class="sec">
-      <div class="stitle">Trailer dimensions</div>
-      <div class="frow"><label>Hitch to front of box</label><input type="number" id="h2b" value="44" step="0.5"><span class="funit">in</span></div>
-      <div class="frow"><label>Front of box to front axle</label><input type="number" id="b2a" value="124" step="0.5"><span class="funit">in</span></div>
-      <div class="frow"><label>Axle spread (center to center)</label><input type="number" id="asp" value="45.5" step="0.5"><span class="funit">in</span></div>
-      <div class="frow"><label>Rear axle to rear of box</label><input type="number" id="a2e" value="72.5" step="0.5"><span class="funit">in</span></div>
-      <div class="frow"><label>Trailer empty weight</label><input type="number" id="twt" value="2510" step="10"><span class="funit">lbs</span></div>
-    </div>
-  </div>
-
-  <div class="tpanel" id="tab-gear">
-    <div class="sec">
-      <div class="gear-hdr">
-        <div class="stitle" style="margin:0">Gear items</div>
-        <div class="gear-toggles">
-          <button class="gtbtn" onclick="toggleAllGear(true)">All on</button>
-          <button class="gtbtn" onclick="toggleAllGear(false)">All off</button>
+          <span class="pos-readout-lbl">from front of box · drag the car in the diagram to change</span>
         </div>
       </div>
-      <div class="snote" style="margin-bottom:.6rem">Check to include · tap name to edit · set weight · drag dots in diagram to position</div>
-      <div class="glist" id="glist"></div>
     </div>
   </div>
-
-  <div id="savind">Saved</div>
 </div>
 
 <script>
@@ -198,16 +168,17 @@ function fv(id){const e=document.getElementById(id);return e?parseFloat(e.value)
 function setOff(){
   const h=document.getElementById('sticky').offsetHeight;
   const b=document.getElementById('body');
-  const t=document.getElementById('tabs');
-  if(b)b.style.paddingTop=(h+2)+'px';
-  if(t)t.style.top=h+'px';
+  if(b)b.style.paddingTop=(h+8)+'px';
 }
 
-function showTab(n,btn){
-  document.querySelectorAll('.tpanel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+n).classList.add('active');
-  btn.classList.add('active');
+// ── Setup overlay ──
+function openSetup(){
+  document.getElementById('setup-overlay').hidden=false;
+  document.body.style.overflow='hidden';
+}
+function closeSetup(){
+  document.getElementById('setup-overlay').hidden=true;
+  document.body.style.overflow='';
 }
 
 function toggleAllGear(state){
@@ -223,7 +194,7 @@ function toggleAllGear(state){
   qsave();
 }
 
-// ── F2 half-circle gauge ──
+// ── F2 half-circle gauge (TW hero) ──
 // kind: 'tw' uses target=600 with center-tick + over/under semantics; 'gtw' uses limit=7715 with simple fill.
 // Color is teal (#34d399) when under-or-at target/limit, red (#ef4444) when over.
 function drawGauge(svgId, value, kind){
@@ -248,9 +219,9 @@ function drawGauge(svgId, value, kind){
     }else{
       color=TEAL;
       hero=Math.round(value)+' lb';
-      sub=`−${Math.abs(Math.round(dev))} lb under · −${Math.abs(pct)}%`;
+      sub=`\u2212${Math.abs(Math.round(dev))} lb under · \u2212${Math.abs(pct)}%`;
     }
-  }else{ // gtw
+  }else{ // gtw (retained for completeness; GTW now renders as the ground bar)
     max=GLIM;
     showTick=false;
     if(value>GLIM){
@@ -267,7 +238,7 @@ function drawGauge(svgId, value, kind){
   const angleRad=(180+fraction*180)*Math.PI/180;
   const endX=150+120*Math.cos(angleRad);
   const endY=140+120*Math.sin(angleRad);
-  // Fill arc is ALWAYS ≤ 180° of the full circle (half-circle gauge), so
+  // Fill arc is ALWAYS <= 180 deg of the full circle (half-circle gauge), so
   // large-arc-flag must be 0 — otherwise the path takes the long way
   // around the bottom and renders outside the visible viewBox.
   const fillPath=`M 30 140 A 120 120 0 0 1 ${endX.toFixed(2)} ${endY.toFixed(2)}`;
@@ -283,6 +254,21 @@ function drawGauge(svgId, value, kind){
   h+=`<text x="150" y="115" text-anchor="middle" font-family="DM Mono,monospace" font-size="34" font-weight="500" fill="${color}" style="transition:fill .25s">${hero}</text>`;
   h+=`<text x="150" y="138" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" font-weight="500" fill="${subColor}">${sub}</text>`;
   svg.innerHTML=h;
+}
+
+// ── Hover-link between cargo cells and diagram dots ─────────────
+// Tracks which cargo item is being hovered (in either place) so the matching
+// element in the other place can co-highlight. Persists across redraws so
+// dragging or recalculating doesn't lose the active highlight.
+let hoveredGearId=null;
+function setGearHighlight(id){
+  hoveredGearId=id;
+  document.querySelectorAll('.ccell.hl').forEach(el=>el.classList.remove('hl'));
+  document.querySelectorAll('#svg .hl').forEach(el=>el.classList.remove('hl'));
+  if(id){
+    document.getElementById('gc_'+id)?.classList.add('hl');
+    document.querySelector(`#svg [data-gear-id="${id}"]`)?.classList.add('hl');
+  }
 }
 
 let stimer=null;
@@ -325,12 +311,14 @@ function buildGear(){
   const c=document.getElementById('glist');c.innerHTML='';
   gear.forEach(g=>{
     const card=document.createElement('div');
-    card.className='gcard'+(g.on?'':' off');card.id='gc_'+g.id;
+    card.className='ccell'+(g.on?'':' off');card.id='gc_'+g.id;
     card.innerHTML=`
-      <div class="ghdr">
+      <div class="ccell-top">
         <input type="checkbox" class="gchk" id="ck_${g.id}" ${g.on?'checked':''}>
-        <input type="text" class="gname" id="nm_${g.id}" value="${g.name}" placeholder="Item name">
-        <div class="gwt"><input type="number" id="wt_${g.id}" value="${g.wt}" min="0" step="1"><span class="gwtu">lbs</span></div>
+        <input type="text" class="cname" id="nm_${g.id}" value="${g.name}" placeholder="Item">
+      </div>
+      <div class="ccell-wt">
+        <input type="number" id="wt_${g.id}" value="${g.wt}" min="0" step="1"><span class="gwtu">lbs</span>
       </div>`;
     c.appendChild(card);
     const ck=card.querySelector('#ck_'+g.id);
@@ -339,11 +327,13 @@ function buildGear(){
     ck.addEventListener('change',()=>{card.classList.toggle('off',!ck.checked);calc();qsave();});
     wt.addEventListener('input',()=>{calc();qsave();});
     nm.addEventListener('input',qsave);
+    card.addEventListener('mouseenter',()=>setGearHighlight(g.id));
+    card.addEventListener('mouseleave',()=>setGearHighlight(null));
   });
 }
 
-// Refresh the inline position readouts inside each gear card without rebuilding.
-// (Currently the cards don't show position readouts — kept as a no-op stub
+// Refresh inline position readouts inside cargo cells without rebuilding.
+// (Cells currently don't show position readouts — kept as a no-op stub
 // so the calc() call doesn't error. Re-implement if readouts come back.)
 function refreshGearReadouts(){ /* no-op */ }
 
@@ -390,32 +380,13 @@ function calc(){
     const tot=Math.round(twCar+twG+twT);
     const gtw=Math.round(twt+cFW+cRW+gWt);
     const rem=LIM-tot;
+    const gtwFrac=gtw/GLIM;
+    const gtwOver=gtw>GLIM;
 
-    // F2 half-circle gauges
+    // TW hero gauge (GTW now renders as the ground-plane bar inside draw())
     drawGauge('tw-pie',tot,'tw');
-    drawGauge('gtw-pie',gtw,'gtw');
 
-    // Header (removed from DOM — guarded)
-    const hw=document.getElementById('htw');
-    if(hw){hw.textContent=tot+' lb TW';hw.className='hdr-tw'+(tot>LIM?' bad':tot>WRN?' warn':'');}
-
-    // Banner (removed from DOM — guarded)
-    const bn=document.getElementById('banner');
-    if(bn){
-      let msg=tot>LIM?`TW over by ${-rem} lbs — slide car rearward or move heavy gear aft of axle midpoint`:
-              tot>WRN?`TW close to limit — ${rem} lbs remaining, verify with tongue scale`:
-              `TW OK — ${rem} lbs of headroom`;
-      if(gtw>GLIM)msg+=' · GTW over by '+(gtw-GLIM)+' lbs';
-      bn.textContent=msg;bn.className=(tot>LIM||gtw>GLIM)?'bad':tot>WRN?'warn':'ok';
-    }
-
-    // Info strip — just the TW breakdown (car vs gear). Tail clearance,
-    // trailer TW est, headroom were dropped; the gauges show the totals.
-    document.getElementById('istrip').innerHTML=
-      `<span>Car TW <strong>${Math.round(twCar)} lbs</strong></span>`+
-      `<span>Gear TW <strong>${Math.round(twG)} lbs</strong></span>`;
-
-    draw({h2b,bl,tFA,tRA,amid,nd,cFA,cRA,cTail,tot,tc,no,wb,to});
+    draw({h2b,bl,tFA,tRA,amid,nd,cFA,cRA,cTail,tot,tc,no,wb,to,gtw,gtwFrac,gtwOver});
     setOff();
   }catch(e){console.error('calc error',e);}
 }
@@ -437,7 +408,7 @@ const SIL={
   // (path extent max), but empirically the visible bumper sits well left of
   // that — there's transparent path extent past the visible art. Tuned to
   // 7100 so when nd is at max, the visible rear lands near the box rear wall.
-  // Adjust ±100 to shift visible rear position ~5 px.
+  // Adjust +/-100 to shift visible rear position ~5 px.
   cNose:811, cTail:7100,
   // Car ARTWORK vertical bounds
   cArtTop:2453,
@@ -447,7 +418,7 @@ const SIL={
   // move it DOWN. That's because the transform places this y-point at the
   // deck floor — if you claim the bottom is higher in the SVG than it really
   // is, the real wheel-bottoms end up above the deck (and vice versa).
-  // 4800 is empirically tuned; adjust ±200 to nudge ~10px on screen.
+  // 4650 is empirically tuned; adjust +/-200 to nudge ~10px on screen.
   cArtBottom:4650,
   // Shared real-world scale
   unitsPerInch:35.6653,
@@ -562,6 +533,22 @@ function draw(p){
 
   let h=`<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
 
+  // ── GTW ground-plane bar ──
+  // Drawn FIRST so the trailer wheels render on top and appear to rest on it.
+  // Doubles as the ground line and the gross-trailer-weight capacity meter.
+  const barTop=gY, barH=13, barW=xR-xL;
+  const gtwFrac=Math.min(Math.max(p.gtwFrac,0),1);
+  const barColor=p.gtwOver?'#ef4444':'#34d399';
+  h+=`<rect x="${xL}" y="${barTop}" width="${barW}" height="${barH}" rx="2.5" fill="rgba(255,255,255,0.06)"/>`;
+  if(gtwFrac>0){
+    h+=`<rect x="${xL}" y="${barTop}" width="${(barW*gtwFrac).toFixed(1)}" height="${barH}" rx="2.5" fill="${barColor}" opacity="0.9" style="transition:width .35s,fill .25s"/>`;
+  }
+  const gtwLbl=p.gtwOver
+    ? `${p.gtw.toLocaleString()} / ${GLIM.toLocaleString()} lb · +${(p.gtw-GLIM).toLocaleString()} over`
+    : `${p.gtw.toLocaleString()} / ${GLIM.toLocaleString()} lb · ${Math.round(gtwFrac*100)}%`;
+  h+=`<text x="${xL}" y="${barTop+barH+11}" font-size="10.5" font-weight="500" fill="${p.gtwOver?'#ef4444':'#9494a0'}" font-family="DM Sans,sans-serif">Gross trailer wt</text>`;
+  h+=`<text x="${xR}" y="${barTop+barH+11}" text-anchor="end" font-size="10.5" font-weight="600" fill="${p.gtwOver?'#ef4444':'#34d399'}" font-family="DM Sans,sans-serif">${gtwLbl}</text>`;
+
   // ── Trailer silhouette ──
   if(SIL.ready){
     const tSpan=(SIL.tBoxRear-SIL.tCoupler);
@@ -592,7 +579,7 @@ function draw(p){
     h+=`<rect data-drag="car" x="${carLeftPx.toFixed(1)}" y="${carTopY.toFixed(1)}" width="${(carRightPx-carLeftPx).toFixed(1)}" height="${(gY-deckPx-carTopY).toFixed(1)}" fill="transparent" stroke="none"/>`;
   }
 
-  // ── Gear dots — sized by weight (sqrt scaling so area ≈ weight).
+  // ── Cargo dots — sized by weight (sqrt scaling so area ≈ weight).
   // Draw HEAVIEST FIRST so smaller dots render on top and stay clickable.
   // posY (visual height above deck floor, in inches) lets the user spread
   // overlapping items vertically; it does NOT affect TW calculation.
@@ -604,7 +591,8 @@ function draw(p){
   drawList.forEach(({g,r})=>{
     const yOffset=(g.posY||0)*pxPerIn;
     const cy=(gY-deckPx)-r-yOffset; // dot bottom rests on (deck + posY inches)
-    h+=`<circle data-drag="gear" data-gear-id="${g.id}" cx="${bx(g.pos).toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#f59e0b" opacity="0.9" stroke="#0f0f10" stroke-width="1.5"/>`;
+    const hl=(g.id===hoveredGearId)?' hl':'';
+    h+=`<circle data-drag="gear" data-gear-id="${g.id}" class="${hl.trim()}" cx="${bx(g.pos).toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#f59e0b" opacity="0.9" stroke="#0f0f10" stroke-width="1.5"/>`;
   });
 
   // ── Car CG marker — solid vertical down to deck, bold green label.
@@ -613,7 +601,7 @@ function draw(p){
   h+=`<line x1="${cgx}" y1="${boxTopY+10}" x2="${cgx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.85" pointer-events="none"/>`;
   h+=`<text x="${cgx+4}" y="${labelY}" text-anchor="start" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif" pointer-events="none">car CG</text>`;
 
-  // ── Nose gap annotation — bold orange to match gear dots, at 2/3 box height ──
+  // ── Nose gap annotation — bold orange to match cargo dots, at 2/3 box height ──
   if(p.nd>2){
     const n1=bx(0),n2=bx(p.nd),ny=labelY+4;
     h+=`<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#f59e0b" stroke-width="2" marker-end="url(#ar)" marker-start="url(#ar)" opacity="0.9" pointer-events="none"/>`;
@@ -621,10 +609,16 @@ function draw(p){
   }
 
   svg.innerHTML=h;
+  // Re-attach hover-link handlers to the freshly-rendered dots
+  svg.querySelectorAll('[data-gear-id]').forEach(el=>{
+    const id=el.dataset.gearId;
+    el.addEventListener('mouseenter',()=>setGearHighlight(id));
+    el.addEventListener('mouseleave',()=>setGearHighlight(null));
+  });
 }
 
 // ── Drag-to-position ─────────────────────────────────────────────
-// SVG event delegation. Both car (X only) and gear (X and Y) draggable.
+// SVG event delegation. Both car (X only) and cargo (X and Y) draggable.
 // Touch and mouse supported. Coordinate conversion chain:
 //   client pixels → SVG viewBox units → real-world inches
 let dragState=null;
@@ -711,6 +705,10 @@ function attachDragHandlers(){
 
 function wire(){
   document.querySelectorAll('input[type=number]').forEach(el=>el.addEventListener('input',()=>{calc();qsave();}));
+  // ESC closes the setup overlay
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape'&&!document.getElementById('setup-overlay').hidden)closeSetup();
+  });
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
