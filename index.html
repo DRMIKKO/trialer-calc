@@ -15,19 +15,22 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .dash{position:sticky;top:0;z-index:200;background:var(--bg);border-bottom:1px solid var(--bd)}
 .dash-inner{max-width:680px;margin:0 auto;padding:0 1rem .4rem}
 .cargo-inner{max-width:680px;margin:0 auto;padding:.5rem 1rem 3rem}
-.dash-top{display:flex;align-items:center;justify-content:flex-end;padding:.4rem .15rem .1rem}
-.cog-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);padding:.35rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s,background .15s;flex-shrink:0}
+.dash-top{display:flex;align-items:center;justify-content:flex-start;padding:.4rem .15rem .15rem}
+.cog-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);padding:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s,background .15s;flex-shrink:0}
 .cog-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
 .cog-btn:active{background:var(--bg)}
-.tw-hero{display:block;width:100%;max-width:330px;height:auto;max-height:152px;margin:0 auto}
+.gauge-box{display:flex;justify-content:flex-start}
+.tw-hero{display:block;width:100%;max-width:360px;height:auto;max-height:200px;margin:0}
 .dgwrap{padding:0 0 .25rem;background:var(--bg)}
 
-@media (min-width:760px){
-  .app{flex-direction:row;align-items:flex-start;max-width:1200px;margin:0 auto}
-  .dash{flex:0 0 56%;border-bottom:none;border-right:1px solid var(--bd);align-self:stretch}
+@media (min-width:900px){
+  .app{flex-direction:row;align-items:flex-start;max-width:1500px;margin:0 auto}
+  /* Trailer/dashboard has PRIORITY: a comfortable capped width that doesn't grow. */
+  .dash{flex:0 1 600px;max-width:620px;border-bottom:none;border-right:1px solid var(--bd)}
   .dash-inner{padding:.5rem 1rem 1rem}
-  .cargo{flex:1 1 44%;min-width:0}
-  .cargo-inner{padding:.7rem 1rem 3rem}
+  /* Cargo grid FILLS the remaining width — auto-fill adds/removes columns. */
+  .cargo{flex:1 1 0;min-width:0}
+  .cargo-inner{padding:.7rem 1rem 3rem;max-width:none}
 }
 
 /* ── Setup overlay ── */
@@ -52,12 +55,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .pos-readout-lbl{font-size:.7rem;color:var(--tx3)}
 
 /* ── Cargo grid (container-responsive) ── */
-.cargo-hdr{display:flex;justify-content:flex-end;align-items:center;margin-bottom:.45rem;gap:.5rem}
+.cargo-hdr{display:flex;justify-content:flex-start;align-items:center;margin-bottom:.45rem;gap:.5rem}
 .cargo-toggles{display:flex;gap:.35rem}
 .gtbtn{font-family:'DM Sans',sans-serif;font-size:.66rem;font-weight:500;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.25rem .55rem;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.03em}
 .gtbtn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
 .gtbtn:active{background:var(--bg)}
-.cargo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:.35rem}
+.cargo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.4rem}
 .ccell{position:relative;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.4rem .45rem;transition:opacity .15s,border-color .15s,background .15s}
 .ccell.off{opacity:.42}
 .ccell.hl{border-color:var(--am);background:var(--bg3)}
@@ -94,10 +97,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
     <div class="dash-inner">
       <div class="dash-top">
         <button class="cog-btn" onclick="openSetup()" aria-label="Open setup" title="Setup">
-          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
       </div>
-      <svg class="tw-hero" id="tw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="gauge-box"><svg class="tw-hero" id="tw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg></div>
       <div class="dgwrap">
         <svg id="svg" width="100%" viewBox="0 0 680 260" role="img">
           <title>Trailer load diagram</title>
@@ -164,20 +167,23 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 <script>
 const LIM=600,WRN=540,GLIM=7715,SK='twc3';
 const DG=[
-  {id:'wheels',name:'Wheels & tires',   wt:182,pos:180,posY:0,on:true},
-  {id:'fuel',  name:'Fuel',             wt:60, pos:210,posY:0,on:true},
-  {id:'rack',  name:'Tire rack',        wt:20, pos:170,posY:0,on:true},
-  {id:'jack',  name:'Jack & stands',    wt:40, pos:160,posY:0,on:true},
-  {id:'tools', name:'Tools',            wt:30, pos:150,posY:0,on:true},
-  {id:'gen',   name:'Generator',        wt:100,pos:130,posY:0,on:true},
-  {id:'pump',  name:'Tire pump',        wt:8,  pos:155,posY:0,on:false},
-  {id:'spray', name:'Water sprayer',    wt:13, pos:200,posY:0,on:false},
-  {id:'cooler',name:'Cooler',           wt:50, pos:165,posY:0,on:false},
-  {id:'bench', name:'Bench',            wt:20, pos:220,posY:0,on:false},
-  {id:'table', name:'Table',            wt:10, pos:215,posY:0,on:false},
-  {id:'chairs',name:'Chairs',           wt:5,  pos:230,posY:0,on:false},
-  {id:'skate', name:'Skateboard',       wt:25, pos:225,posY:0,on:false},
-  {id:'bike',  name:'Bike',             wt:50, pos:228,posY:0,on:false},
+  {id:'wheels', name:'Wheels\\Tires', wt:182,pos:12, posY:0, on:true},
+  {id:'fuel',   name:'Fuel',          wt:120,pos:28, posY:38,on:true},
+  {id:'ttires', name:'Trailer Tires', wt:20, pos:6,  posY:22,on:true},
+  {id:'jack',   name:'Jack',          wt:40, pos:18, posY:0, on:true},
+  {id:'tools',  name:'Tools',         wt:30, pos:40, posY:0, on:true},
+  {id:'gen',    name:'Generator',     wt:100,pos:205,posY:0, on:true},
+  {id:'pump',   name:'Tire pump',     wt:8,  pos:10, posY:40,on:true},
+  {id:'spray',  name:'Water sprayer', wt:13, pos:55, posY:0, on:true},
+  {id:'cooler', name:'Cooler',        wt:50, pos:215,posY:0, on:true},
+  {id:'bench',  name:'Bench',         wt:20, pos:232,posY:0, on:true},
+  {id:'table',  name:'Table',         wt:10, pos:236,posY:30,on:true},
+  {id:'chairs', name:'Chairs',        wt:5,  pos:240,posY:30,on:true},
+  {id:'skate',  name:'Skateboard',    wt:25, pos:100,posY:45,on:true},
+  {id:'bike',   name:'Bike',          wt:50, pos:90, posY:50,on:true},
+  {id:'jstands',name:'Jack Stands',   wt:0,  pos:121,posY:0, on:true},
+  {id:'batt',   name:'Batteries',     wt:0,  pos:121,posY:0, on:true},
+  {id:'bike2',  name:'Bike',          wt:50, pos:130,posY:0, on:true},
 ];
 let gear=JSON.parse(JSON.stringify(DG));
 
