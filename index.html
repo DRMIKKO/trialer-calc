@@ -331,10 +331,6 @@ function buildGear(){
         <input type="checkbox" class="gchk" id="ck_${g.id}" ${g.on?'checked':''}>
         <input type="text" class="gname" id="nm_${g.id}" value="${g.name}" placeholder="Item name">
         <div class="gwt"><input type="number" id="wt_${g.id}" value="${g.wt}" min="0" step="1"><span class="gwtu">lbs</span></div>
-      </div>
-      <div class="gpos">
-        <span>Position</span>
-        <span class="gpos-val"><span id="px_${g.id}">${g.pos.toFixed(1)}</span>" from front<span id="py_${g.id}">${(g.posY||0)>0.5?' · '+(g.posY||0).toFixed(0)+'" above deck':''}</span></span>
       </div>`;
     c.appendChild(card);
     const ck=card.querySelector('#ck_'+g.id);
@@ -347,14 +343,9 @@ function buildGear(){
 }
 
 // Refresh the inline position readouts inside each gear card without rebuilding.
-function refreshGearReadouts(){
-  gear.forEach(g=>{
-    const px=document.getElementById('px_'+g.id);
-    const py=document.getElementById('py_'+g.id);
-    if(px)px.textContent=g.pos.toFixed(1);
-    if(py)py.textContent=(g.posY||0)>0.5?' · '+(g.posY||0).toFixed(0)+'" above deck':'';
-  });
-}
+// (Currently the cards don't show position readouts — kept as a no-op stub
+// so the calc() call doesn't error. Re-implement if readouts come back.)
+function refreshGearReadouts(){ /* no-op */ }
 
 function calc(){
   try{
@@ -418,14 +409,11 @@ function calc(){
       bn.textContent=msg;bn.className=(tot>LIM||gtw>GLIM)?'bad':tot>WRN?'warn':'ok';
     }
 
-    // Info strip — slimmed down: only show what's NOT already in the diagram.
-    // (Nose gap and Car CG are annotated in the SVG; axle-mid is geometric and rarely needed.)
+    // Info strip — just the TW breakdown (car vs gear). Tail clearance,
+    // trailer TW est, headroom were dropped; the gauges show the totals.
     document.getElementById('istrip').innerHTML=
-      `<span>Tail clearance <strong>${tc.toFixed(1)}"</strong></span>`+
       `<span>Car TW <strong>${Math.round(twCar)} lbs</strong></span>`+
-      `<span>Gear TW <strong>${Math.round(twG)} lbs</strong></span>`+
-      `<span>Trailer TW est <strong>${Math.round(twT)} lbs</strong></span>`+
-      `<span>Headroom <strong>${rem} lbs</strong></span>`;
+      `<span>Gear TW <strong>${Math.round(twG)} lbs</strong></span>`;
 
     draw({h2b,bl,tFA,tRA,amid,nd,cFA,cRA,cTail,tot,tc,no,wb,to});
     setOff();
@@ -445,7 +433,12 @@ const SIL={
   tArtBottom:6310,   // y of wheel bottoms in SVG units (= ground reference)
   // Car file horizontal anchors
   cFAxle:2112.18, cRAxle:5838.33,
-  cNose:811, cTail:7401,
+  // cTail: x of the visible rear bumper. Original handoff value was 7401
+  // (path extent max), but empirically the visible bumper sits well left of
+  // that — there's transparent path extent past the visible art. Tuned to
+  // 7100 so when nd is at max, the visible rear lands near the box rear wall.
+  // Adjust ±100 to shift visible rear position ~5 px.
+  cNose:811, cTail:7100,
   // Car ARTWORK vertical bounds
   cArtTop:2453,
   // cArtBottom: the y-coordinate (in car-SVG units) that should be anchored
@@ -455,7 +448,7 @@ const SIL={
   // deck floor — if you claim the bottom is higher in the SVG than it really
   // is, the real wheel-bottoms end up above the deck (and vice versa).
   // 4800 is empirically tuned; adjust ±200 to nudge ~10px on screen.
-  cArtBottom:4800,
+  cArtBottom:4650,
   // Shared real-world scale
   unitsPerInch:35.6653,
   trailerEl:null, carEl:null, ready:false
