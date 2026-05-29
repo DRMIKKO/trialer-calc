@@ -84,6 +84,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 #savind.show{opacity:1}
 
 /* ── SVG drag affordances ── */
+#svg{touch-action:none}
 #svg [data-drag]{cursor:grab}
 #svg [data-drag]:active{cursor:grabbing}
 #svg.dragging,#svg.dragging *{cursor:grabbing !important}
@@ -598,21 +599,33 @@ function draw(p){
   });
 }
 
-// ── Drag-to-position ─────────────────────────────────────────────
+// ── Drag-to-position (Pointer Events) ────────────────────────────
+// Pointer Events unify mouse + touch and, with setPointerCapture on the SVG,
+// keep firing pointermove even though draw() rebuilds the SVG's innerHTML on
+// every move (which detaches the originally-touched dot). Capturing on the
+// <svg> works because the <svg> element itself is never replaced. This is what
+// fixes dragging on Android: with the old per-element touch listeners, once the
+// touched circle was rebuilt away, touchmove stopped reaching a handler.
 let dragState=null;
 const snap=v=>Math.round(v*2)/2;
 
-function getEvtPoint(e){
-  const t=e.touches?e.touches[0]:e;
-  return {clientX:t.clientX,clientY:t.clientY};
-}
-function svgCoords(e){
+// Convert a pointer event to SVG user-space using the live screen CTM, so it
+// respects the current viewBox / preserveAspectRatio (no hardcoded dimensions).
+function svgUserPoint(e){
   const svg=document.getElementById('svg');
+  const ctm=svg.getScreenCTM();
+  if(ctm){
+    const pt=svg.createSVGPoint();
+    pt.x=e.clientX; pt.y=e.clientY;
+    const p=pt.matrixTransform(ctm.inverse());
+    return {x:p.x,y:p.y};
+  }
+  // Fallback: derive from the element rect + current viewBox box.
   const rect=svg.getBoundingClientRect();
-  const {clientX,clientY}=getEvtPoint(e);
+  const vb=svg.viewBox.baseVal;
   return {
-    x:((clientX-rect.left)/rect.width)*680,
-    y:((clientY-rect.top)/rect.height)*260
+    x:vb.x+((e.clientX-rect.left)/rect.width)*vb.width,
+    y:vb.y+((e.clientY-rect.top)/rect.height)*vb.height
   };
 }
 
@@ -620,7 +633,7 @@ function dragStart(e){
   const target=e.target.closest('[data-drag]');
   if(!target)return;
   const type=target.dataset.drag;
-  const {x,y}=svgCoords(e);
+  const {x,y}=svgUserPoint(e);
   if(type==='gear'){
     const id=target.dataset.gearId;
     const g=gear.find(it=>it.id===id);
@@ -630,14 +643,16 @@ function dragStart(e){
     const nd=parseFloat(document.getElementById('nsl').value)||0;
     dragState={type,startX:x,startY:y,startNd:nd};
   }
+  const svg=document.getElementById('svg');
+  try{ svg.setPointerCapture(e.pointerId); }catch(_){}
   e.preventDefault();
-  document.getElementById('svg').classList.add('dragging');
+  svg.classList.add('dragging');
 }
 
 function dragMove(e){
   if(!dragState)return;
   e.preventDefault();
-  const {x,y}=svgCoords(e);
+  const {x,y}=svgUserPoint(e);
   const dx=x-dragState.startX;
   const dy=y-dragState.startY;
   const dInchX=dx*viewState.span/(viewState.xR-viewState.xL);
@@ -657,22 +672,22 @@ function dragMove(e){
   calc();
 }
 
-function dragEnd(){
+function dragEnd(e){
   if(!dragState)return;
   dragState=null;
-  document.getElementById('svg').classList.remove('dragging');
+  const svg=document.getElementById('svg');
+  try{ if(e&&e.pointerId!=null)svg.releasePointerCapture(e.pointerId); }catch(_){}
+  svg.classList.remove('dragging');
   qsave();
 }
 
 function attachDragHandlers(){
   const svg=document.getElementById('svg');
-  svg.addEventListener('mousedown',dragStart);
-  svg.addEventListener('touchstart',dragStart,{passive:false});
-  window.addEventListener('mousemove',dragMove);
-  window.addEventListener('touchmove',dragMove,{passive:false});
-  window.addEventListener('mouseup',dragEnd);
-  window.addEventListener('touchend',dragEnd);
-  window.addEventListener('touchcancel',dragEnd);
+  svg.addEventListener('pointerdown',dragStart);
+  svg.addEventListener('pointermove',dragMove);
+  svg.addEventListener('pointerup',dragEnd);
+  svg.addEventListener('pointercancel',dragEnd);
+  svg.addEventListener('lostpointercapture',dragEnd);
 }
 
 function wire(){
