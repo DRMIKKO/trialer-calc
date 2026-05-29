@@ -13,10 +13,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 /* ── Responsive shell: stacked (portrait) → two-pane (landscape/wide) ── */
 .app{display:flex;flex-direction:column}
 .dash{position:sticky;top:0;z-index:200;background:var(--bg);border-bottom:1px solid var(--bd)}
-.dash-inner{max-width:680px;margin:0 auto;padding:0 1rem .4rem}
+.dash-inner{max-width:680px;margin:0 auto;padding:.25rem 1rem .4rem}
 .cargo-inner{max-width:680px;margin:0 auto;padding:.5rem 1rem 3rem}
-.dash-top{display:flex;align-items:center;justify-content:flex-start;padding:.4rem .15rem .15rem}
-.cog-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);padding:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s,background .15s;flex-shrink:0}
+.cog-btn{position:absolute;top:8px;left:8px;z-index:5;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);padding:.45rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s,background .15s}
 .cog-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
 .cog-btn:active{background:var(--bg)}
 /* Tongue-weight + gross-trailer-weight bar pair (replaces the half-circle gauge) */
@@ -28,7 +27,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .bar-meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:.22rem;gap:.5rem}
 .bar-lbl{font-size:.6rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em}
 .bar-val{font-family:'DM Mono',monospace;font-size:.74rem;font-weight:600;color:var(--ok);white-space:nowrap}
-.dgwrap{padding:0 0 .25rem;background:var(--bg)}
+.dgwrap{position:relative;padding:0 0 .25rem;background:var(--bg)}
 
 @media (min-width:900px){
   .app{flex-direction:row;align-items:flex-start;max-width:1500px;margin:0 auto}
@@ -98,13 +97,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 <div class="app">
   <header class="dash">
     <div class="dash-inner">
-      <div class="dash-top">
-        <button class="cog-btn" onclick="openSetup()" aria-label="Open setup" title="Setup">
-          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        </button>
-      </div>
       <div class="dgwrap">
-        <svg id="svg" width="100%" viewBox="0 0 680 238" role="img">
+        <button class="cog-btn" onclick="openSetup()" aria-label="Open setup" title="Setup">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <svg id="svg" width="100%" viewBox="46 12 600 224" role="img">
           <title>Trailer load diagram</title>
           <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
         </svg>
