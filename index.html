@@ -19,8 +19,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .cog-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);padding:.5rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s,background .15s;flex-shrink:0}
 .cog-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
 .cog-btn:active{background:var(--bg)}
-.gauge-box{display:flex;justify-content:flex-start}
-.tw-hero{display:block;width:100%;max-width:360px;height:auto;max-height:200px;margin:0}
+/* Tongue-weight + gross-trailer-weight bar pair (replaces the half-circle gauge) */
+.bars{display:flex;flex-direction:column;gap:.55rem;padding:.55rem 0 .15rem}
+.bar-wrap{position:relative}
+.bar-track{height:14px;border-radius:7px;background:rgba(255,255,255,.07);overflow:hidden}
+.bar-fill{height:100%;width:0;border-radius:7px;background:var(--ok);transition:width .35s,background .25s}
+.bar-tick{position:absolute;top:-2px;left:50%;width:2px;height:18px;background:#fff;border-radius:1px;transform:translateX(-1px)}
+.bar-meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:.22rem;gap:.5rem}
+.bar-lbl{font-size:.6rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em}
+.bar-val{font-family:'DM Mono',monospace;font-size:.74rem;font-weight:600;color:var(--ok);white-space:nowrap}
 .dgwrap{padding:0 0 .25rem;background:var(--bg)}
 
 @media (min-width:900px){
@@ -60,24 +67,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .gtbtn{font-family:'DM Sans',sans-serif;font-size:.66rem;font-weight:500;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.25rem .55rem;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.03em}
 .gtbtn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
 .gtbtn:active{background:var(--bg)}
-.cargo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.4rem}
-.ccell{position:relative;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.4rem .45rem;transition:opacity .15s,border-color .15s,background .15s}
+.cargo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:.3rem}
+.ccell{position:relative;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.28rem .36rem .3rem;transition:opacity .15s,border-color .15s,background .15s}
 .ccell.off{opacity:.42}
 .ccell.hl{border-color:var(--am);background:var(--bg3)}
-.ccell-top{display:flex;align-items:center;gap:.3rem;margin-bottom:.32rem}
-.gchk{width:15px;height:15px;flex-shrink:0;accent-color:var(--ok);cursor:pointer}
-.cname{flex:1;min-width:0;font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:500;color:var(--tx);background:transparent;border:1px solid transparent;border-radius:6px;padding:.1rem .25rem;transition:border-color .15s,background .15s}
+.cname{display:block;width:100%;font-family:'DM Sans',sans-serif;font-size:.7rem;font-weight:600;color:var(--tx);background:transparent;border:1px solid transparent;border-radius:5px;padding:.04rem .2rem;margin-bottom:.2rem;transition:border-color .15s,background .15s}
 .cname:hover{border-color:var(--bd2)}.cname:focus{border-color:var(--ac);background:var(--bg3);outline:none}
-.ccell-del{flex-shrink:0;width:16px;height:16px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--tx3);font-size:.85rem;line-height:1;cursor:pointer;border-radius:4px;opacity:.55;transition:color .15s,opacity .15s,background .15s}
-.ccell-del:hover{color:var(--bad);opacity:1;background:var(--bg3)}
-.ccell-wt{display:flex;align-items:center;gap:.25rem}
-.ccell-wt input[type=number]{flex:1;min-width:0;padding:.13rem .3rem;font-family:'DM Mono',monospace;font-size:.74rem;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;color:var(--tx);text-align:right;-moz-appearance:textfield}
-.ccell-wt input[type=number]:focus{outline:none;border-color:var(--ac)}
-.ccell-wt input[type=number]::-webkit-outer-spin-button,.ccell-wt input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
-.gwtu{font-size:.62rem;color:var(--tx3);flex-shrink:0}
-.ccell-add{display:flex;align-items:center;justify-content:center;min-height:62px;background:none;border:1px dashed var(--bd2);border-radius:var(--r);color:var(--tx3);cursor:pointer;font-family:inherit;transition:color .15s,border-color .15s,background .15s}
+.ccell-row{display:flex;align-items:center;justify-content:space-between}
+.gchk{width:15px;height:15px;flex-shrink:0;accent-color:var(--am);cursor:pointer}
+.cwt{width:54px;flex:none;padding:.08rem .28rem;font-family:'DM Mono',monospace;font-size:.7rem;background:var(--bg3);border:1px solid var(--bd);border-radius:5px;color:var(--tx);text-align:right;-moz-appearance:textfield}
+.cwt:focus{outline:none;border-color:var(--ac)}
+.cwt::-webkit-outer-spin-button,.cwt::-webkit-inner-spin-button{-webkit-appearance:none}
+.ccell-add{display:flex;align-items:center;justify-content:center;min-height:44px;background:none;border:1px dashed var(--bd2);border-radius:var(--r);color:var(--tx3);cursor:pointer;font-family:inherit;transition:color .15s,border-color .15s,background .15s}
 .ccell-add:hover{color:var(--ok);border-color:var(--ok);background:var(--bg2)}
-.ccell-add span{font-size:1.4rem;line-height:1;font-weight:300}
+.ccell-add span{font-size:1.3rem;line-height:1;font-weight:300}
 #savind{font-size:.6rem;color:var(--tx3);text-align:center;padding:.8rem 0 0;opacity:0;transition:opacity .4s}
 #savind.show{opacity:1}
 
@@ -100,12 +103,21 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
       </div>
-      <div class="gauge-box"><svg class="tw-hero" id="tw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg></div>
       <div class="dgwrap">
-        <svg id="svg" width="100%" viewBox="0 0 680 260" role="img">
+        <svg id="svg" width="100%" viewBox="0 0 680 238" role="img">
           <title>Trailer load diagram</title>
           <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
         </svg>
+      </div>
+      <div class="bars">
+        <div class="bar-row">
+          <div class="bar-wrap"><div class="bar-track"><div class="bar-fill" id="tw-fill"></div></div><div class="bar-tick"></div></div>
+          <div class="bar-meta"><span class="bar-lbl">Tongue weight</span><span class="bar-val" id="tw-val">&mdash;</span></div>
+        </div>
+        <div class="bar-row">
+          <div class="bar-wrap"><div class="bar-track"><div class="bar-fill" id="gtw-fill"></div></div></div>
+          <div class="bar-meta"><span class="bar-lbl">Gross trailer wt</span><span class="bar-val" id="gtw-val">&mdash;</span></div>
+        </div>
       </div>
     </div>
   </header>
@@ -165,7 +177,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 </div>
 
 <script>
-const LIM=600,WRN=540,GLIM=7715,SK='twc3';
+const LIM=600,WRN=540,GLIM=7715,SK='twc4';
 const DG=[
   {id:'wheels', name:'Wheels\\Tires', wt:182,pos:12, posY:0, on:true},
   {id:'fuel',   name:'Fuel',          wt:120,pos:28, posY:38,on:true},
@@ -212,66 +224,29 @@ function toggleAllGear(state){
   qsave();
 }
 
-// ── F2 half-circle gauge (TW hero) ──
-// kind: 'tw' uses target=600 with center-tick + over/under semantics; 'gtw' uses limit=7715 with simple fill.
-// Color is teal (#34d399) when under-or-at target/limit, red (#ef4444) when over.
-function drawGauge(svgId, value, kind){
-  const svg=document.getElementById(svgId);
-  if(!svg)return;
-  const TEAL='#34d399', RED='#ef4444';
-  let max, hero, sub, color, showTick;
-  if(kind==='tw'){
-    const TARGET=LIM;            // 600
-    max=TARGET*2;                // 1200, so target sits at 12 o'clock
-    showTick=true;
-    const dev=value-TARGET;
-    const pct=Math.round((dev/TARGET)*100);
-    if(value>TARGET){
-      color=RED;
-      hero=Math.round(value)+' lb';
-      sub=`+${Math.abs(Math.round(dev))} lb over · +${Math.abs(pct)}%`;
-    }else if(Math.abs(dev)<=1){
-      color=TEAL;
-      hero=Math.round(value)+' lb';
-      sub='ON TARGET';
-    }else{
-      color=TEAL;
-      hero=Math.round(value)+' lb';
-      sub=`\u2212${Math.abs(Math.round(dev))} lb under · \u2212${Math.abs(pct)}%`;
-    }
-  }else{ // gtw (retained for completeness; GTW now renders as the ground bar)
-    max=GLIM;
-    showTick=false;
-    if(value>GLIM){
-      color=RED;
-      hero=value.toLocaleString()+' lb';
-      sub=`+${(value-GLIM).toLocaleString()} lb over limit`;
-    }else{
-      color=TEAL;
-      hero=value.toLocaleString()+' lb';
-      sub=`${value.toLocaleString()} / ${GLIM.toLocaleString()} lbs`;
-    }
-  }
-  const fraction=Math.min(value/max,1);
-  const angleRad=(180+fraction*180)*Math.PI/180;
-  const endX=150+120*Math.cos(angleRad);
-  const endY=140+120*Math.sin(angleRad);
-  // Fill arc is ALWAYS <= 180 deg of the full circle (half-circle gauge), so
-  // large-arc-flag must be 0 — otherwise the path takes the long way
-  // around the bottom and renders outside the visible viewBox.
-  const fillPath=`M 30 140 A 120 120 0 0 1 ${endX.toFixed(2)} ${endY.toFixed(2)}`;
-  const subColor=(kind==='tw'&&sub==='ON TARGET')?TEAL:
-                 (color===RED)?RED:'#9494a0';
-  let h=`<path d="M 30 140 A 120 120 0 1 1 270 140" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="14" stroke-linecap="round"/>`;
-  if(fraction>0){
-    h+=`<path d="${fillPath}" fill="none" stroke="${color}" stroke-width="14" stroke-linecap="round" style="transition:d .35s,stroke .25s"/>`;
-  }
-  if(showTick){
-    h+=`<line x1="150" y1="14" x2="150" y2="36" stroke="#fff" stroke-width="3" stroke-linecap="round"/>`;
-  }
-  h+=`<text x="150" y="115" text-anchor="middle" font-family="DM Mono,monospace" font-size="34" font-weight="500" fill="${color}" style="transition:fill .25s">${hero}</text>`;
-  h+=`<text x="150" y="138" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="13" font-weight="500" fill="${subColor}">${sub}</text>`;
-  svg.innerHTML=h;
+// ── Tongue-weight + gross-trailer-weight bars ──
+// Both render as horizontal fill bars (consistent look). TW fills toward 2x
+// target so the target sits at the 50% tick; teal under/at, red over. GTW
+// fills toward the 7,715 lb limit.
+function setBar(key,frac,color,text){
+  const fill=document.getElementById(key+'-fill');
+  const val=document.getElementById(key+'-val');
+  if(fill){fill.style.width=(Math.min(Math.max(frac,0),1)*100).toFixed(1)+'%';fill.style.background=color;}
+  if(val){val.textContent=text;val.style.color=color;}
+}
+function updateBars(tot,gtw){
+  const TEAL='#34d399', RED='#ef4444', TARGET=LIM; // 600
+  // Tongue weight
+  const dev=tot-TARGET;
+  const twOver=tot>TARGET, twOn=Math.abs(dev)<=1;
+  const twColor=twOver?RED:TEAL;
+  const twStatus=twOn?'ON TARGET':twOver?`+${Math.abs(dev)} lb over`:`\u2212${Math.abs(dev)} lb under`;
+  setBar('tw', tot/(TARGET*2), twColor, `${tot} / ${TARGET} lb · ${twStatus}`);
+  // Gross trailer weight
+  const gFrac=gtw/GLIM, gOver=gtw>GLIM;
+  const gColor=gOver?RED:TEAL;
+  const gStatus=gOver?`+${(gtw-GLIM).toLocaleString()} lb over`:`${Math.round(gFrac*100)}%`;
+  setBar('gtw', gFrac, gColor, `${gtw.toLocaleString()} / ${GLIM.toLocaleString()} lb · ${gStatus}`);
 }
 
 // ── Hover-link between cargo cells and diagram dots ─────────────
@@ -336,23 +311,18 @@ function buildGear(){
     const card=document.createElement('div');
     card.className='ccell'+(g.on?'':' off');card.id='gc_'+g.id;
     card.innerHTML=`
-      <div class="ccell-top">
+      <input type="text" class="cname" id="nm_${g.id}" value="${(g.name||'').replace(/"/g,'&quot;')}" placeholder="Item">
+      <div class="ccell-row">
         <input type="checkbox" class="gchk" id="ck_${g.id}" ${g.on?'checked':''}>
-        <input type="text" class="cname" id="nm_${g.id}" value="${(g.name||'').replace(/"/g,'&quot;')}" placeholder="Item">
-        <button class="ccell-del" id="del_${g.id}" aria-label="Remove item" title="Remove">&#215;</button>
-      </div>
-      <div class="ccell-wt">
-        <input type="number" id="wt_${g.id}" value="${g.wt}" min="0" step="1"><span class="gwtu">lbs</span>
+        <input type="number" class="cwt" id="wt_${g.id}" value="${g.wt}" min="0" step="1">
       </div>`;
     c.appendChild(card);
     const ck=card.querySelector('#ck_'+g.id);
     const wt=card.querySelector('#wt_'+g.id);
     const nm=card.querySelector('#nm_'+g.id);
-    const del=card.querySelector('#del_'+g.id);
     ck.addEventListener('change',()=>{card.classList.toggle('off',!ck.checked);calc();qsave();});
     wt.addEventListener('input',()=>{calc();qsave();});
     nm.addEventListener('input',()=>{const it=gear.find(x=>x.id===g.id);if(it)it.name=nm.value;qsave();});
-    del.addEventListener('click',()=>removeCargo(g.id));
     card.addEventListener('mouseenter',()=>setGearHighlight(g.id));
     card.addEventListener('mouseleave',()=>setGearHighlight(null));
   });
@@ -430,9 +400,12 @@ function calc(){
     const gtwOver=gtw>GLIM;
 
     // TW hero gauge (GTW now renders as the ground-plane bar inside draw())
-    drawGauge('tw-pie',tot,'tw');
+    updateBars(tot,gtw);
+    // Combined load CG from front of box, derived from total tongue weight
+    // vs. total weight (so it stays consistent with the TW the app shows).
+    const loadCG=gtw>0?amH*(1-tot/gtw)-h2b:amid;
 
-    draw({h2b,bl,tFA,tRA,amid,nd,cFA,cRA,cTail,tot,tc,no,wb,to,gtw,gtwFrac,gtwOver});
+    draw({h2b,bl,tFA,tRA,amid,nd,cFA,cRA,cTail,no,wb,to,loadCG});
   }catch(e){console.error('calc error',e);}
 }
 
@@ -557,22 +530,6 @@ function draw(p){
 
   let h=`<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
 
-  // ── GTW ground-plane bar — spans the trailer footprint (coupler → box rear) ──
-  // Drawn FIRST so the trailer wheels render on top and appear to rest on it.
-  // The track is aligned to the trailer's actual extents, not the diagram edges.
-  const barL=hx, barR=bx(p.bl), barTop=gY, barH=13, barW=barR-barL;
-  const gtwFrac=Math.min(Math.max(p.gtwFrac,0),1);
-  const barColor=p.gtwOver?'#ef4444':'#34d399';
-  h+=`<rect x="${barL.toFixed(1)}" y="${barTop}" width="${barW.toFixed(1)}" height="${barH}" rx="2.5" fill="rgba(255,255,255,0.06)"/>`;
-  if(gtwFrac>0){
-    h+=`<rect x="${barL.toFixed(1)}" y="${barTop}" width="${(barW*gtwFrac).toFixed(1)}" height="${barH}" rx="2.5" fill="${barColor}" opacity="0.9" style="transition:width .35s,fill .25s"/>`;
-  }
-  const gtwLbl=p.gtwOver
-    ? `${p.gtw.toLocaleString()} / ${GLIM.toLocaleString()} lb · +${(p.gtw-GLIM).toLocaleString()} over`
-    : `${p.gtw.toLocaleString()} / ${GLIM.toLocaleString()} lb · ${Math.round(gtwFrac*100)}%`;
-  h+=`<text x="${barL.toFixed(1)}" y="${barTop+barH+11}" font-size="10.5" font-weight="500" fill="${p.gtwOver?'#ef4444':'#9494a0'}" font-family="DM Sans,sans-serif">Gross trailer wt</text>`;
-  h+=`<text x="${barR.toFixed(1)}" y="${barTop+barH+11}" text-anchor="end" font-size="10.5" font-weight="600" fill="${p.gtwOver?'#ef4444':'#34d399'}" font-family="DM Sans,sans-serif">${gtwLbl}</text>`;
-
   // ── Trailer silhouette ──
   if(SIL.ready){
     const tSpan=(SIL.tBoxRear-SIL.tCoupler);
@@ -615,11 +572,19 @@ function draw(p){
     h+=`<circle data-drag="gear" data-gear-id="${g.id}" class="${hl.trim()}" cx="${bx(g.pos).toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#f59e0b" opacity="0.9" stroke="#0f0f10" stroke-width="1.5"/>`;
   });
 
-  // ── Car CG marker ──
+  // ── Car CG marker (label at the top of the line) ──
   const cCG=(p.cFA*fv('carFW')+p.cRA*fv('carRW'))/(fv('carFW')+fv('carRW'));
   const cgx=bx(cCG);
   h+=`<line x1="${cgx}" y1="${boxTopY+10}" x2="${cgx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.85" pointer-events="none"/>`;
-  h+=`<text x="${cgx+4}" y="${labelY}" text-anchor="start" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif" pointer-events="none">car CG</text>`;
+  h+=`<text x="${cgx+4}" y="${boxTopY+18}" text-anchor="start" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif" pointer-events="none">car CG</text>`;
+
+  // ── Combined load CG (car + cargo + trailer) — solid teal, consistent with
+  // the displayed tongue weight: position derived from total TW / total weight. ──
+  if(p.loadCG!=null){
+    const lx=bx(p.loadCG);
+    h+=`<line x1="${lx}" y1="${boxTopY+10}" x2="${lx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1.8" opacity="0.95" pointer-events="none"/>`;
+    h+=`<text x="${lx+4}" y="${boxTopY+32}" text-anchor="start" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif" pointer-events="none">load CG</text>`;
+  }
 
   // ── Nose gap annotation ──
   if(p.nd>2){
