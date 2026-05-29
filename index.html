@@ -73,6 +73,11 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .gsval{font-family:'DM Mono',monospace;font-size:.71rem;color:var(--tx2);min-width:33px;text-align:right;flex-shrink:0}
 #savind{font-size:.6rem;color:var(--tx3);text-align:center;padding:.4rem 0 0;opacity:0;transition:opacity .4s}
 #savind.show{opacity:1}
+.gear-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;gap:.5rem}
+.gear-toggles{display:flex;gap:.35rem}
+.gtbtn{font-family:'DM Sans',sans-serif;font-size:.66rem;font-weight:500;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.25rem .55rem;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.03em}
+.gtbtn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
+.gtbtn:active{background:var(--bg)}
 </style>
 </head>
 <body>
@@ -144,7 +149,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 
   <div class="tpanel" id="tab-gear">
     <div class="sec">
-      <div class="stitle" style="margin-bottom:.15rem">Gear items</div>
+      <div class="gear-hdr">
+        <div class="stitle" style="margin:0">Gear items</div>
+        <div class="gear-toggles">
+          <button class="gtbtn" onclick="toggleAllGear(true)">All on</button>
+          <button class="gtbtn" onclick="toggleAllGear(false)">All off</button>
+        </div>
+      </div>
       <div class="snote" style="margin-bottom:.6rem">Check to include · tap name to edit · set weight · drag slider to place from front of box</div>
       <div class="glist" id="glist"></div>
     </div>
@@ -190,11 +201,26 @@ function showTab(n,btn){
   btn.classList.add('active');
 }
 
+function toggleAllGear(state){
+  gear.forEach(g=>{
+    const ck=document.getElementById('ck_'+g.id);
+    const card=document.getElementById('gc_'+g.id);
+    if(ck){
+      ck.checked=state;
+      if(card)card.classList.toggle('off',!state);
+    }
+  });
+  calc();
+  qsave();
+}
+
 // ── F2 half-circle gauge ──
 // kind: 'tw' uses target=600 with center-tick + over/under semantics; 'gtw' uses limit=7715 with simple fill.
+// Color is teal (#34d399) when under-or-at target/limit, red (#ef4444) when over.
 function drawGauge(svgId, value, kind){
   const svg=document.getElementById(svgId);
   if(!svg)return;
+  const TEAL='#34d399', RED='#ef4444';
   let max, hero, sub, color, showTick;
   if(kind==='tw'){
     const TARGET=LIM;            // 600
@@ -203,15 +229,15 @@ function drawGauge(svgId, value, kind){
     const dev=value-TARGET;
     const pct=Math.round((dev/TARGET)*100);
     if(value>TARGET){
-      color='#ef4444';
+      color=RED;
       hero=Math.round(value)+' lb';
       sub=`+${Math.abs(Math.round(dev))} lb over · +${Math.abs(pct)}%`;
     }else if(Math.abs(dev)<=1){
-      color='#22c55e';
+      color=TEAL;
       hero=Math.round(value)+' lb';
       sub='ON TARGET';
     }else{
-      color='#eab308';
+      color=TEAL;
       hero=Math.round(value)+' lb';
       sub=`−${Math.abs(Math.round(dev))} lb under · −${Math.abs(pct)}%`;
     }
@@ -219,11 +245,11 @@ function drawGauge(svgId, value, kind){
     max=GLIM;
     showTick=false;
     if(value>GLIM){
-      color='#ef4444';
+      color=RED;
       hero=value.toLocaleString()+' lb';
       sub=`+${(value-GLIM).toLocaleString()} lb over limit`;
     }else{
-      color='#22c55e';
+      color=TEAL;
       hero=value.toLocaleString()+' lb';
       sub=`${value.toLocaleString()} / ${GLIM.toLocaleString()} lbs`;
     }
@@ -236,8 +262,8 @@ function drawGauge(svgId, value, kind){
   // large-arc-flag must be 0 — otherwise the path takes the long way
   // around the bottom and renders outside the visible viewBox.
   const fillPath=`M 30 140 A 120 120 0 0 1 ${endX.toFixed(2)} ${endY.toFixed(2)}`;
-  const subColor=(kind==='tw'&&sub==='ON TARGET')?'#22c55e':
-                 (color==='#ef4444')?'#ef4444':'#9494a0';
+  const subColor=(kind==='tw'&&sub==='ON TARGET')?TEAL:
+                 (color===RED)?RED:'#9494a0';
   let h=`<path d="M 30 140 A 120 120 0 1 1 270 140" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="14" stroke-linecap="round"/>`;
   if(fraction>0){
     h+=`<path d="${fillPath}" fill="none" stroke="${color}" stroke-width="14" stroke-linecap="round" style="transition:d .35s,stroke .25s"/>`;
@@ -541,16 +567,17 @@ function draw(p){
     h+=`<g transform="translate(${cDx.toFixed(2)},${cDy.toFixed(2)}) scale(${cScale.toFixed(5)})">${silInner(SIL.carEl,CAR_CLASS_ATTRS)}</g>`;
   }
 
-  // ── Gear dots — aligned to the trailer floor (deck top) ──
-  // Sit them just above deck so they rest on the floor. With larger radius,
-  // raise the y so the bottom of the dot touches the deck rather than its
-  // center being on the deck (otherwise half the dot disappears below).
-  const gearDotR=28;
-  const gearY=gY-deckPx-gearDotR;
+  // ── Gear dots — sized by weight (sqrt scaling so area is proportional
+  // to weight). 200 lb → r=28 anchor, clamped to [5, 30] so tiny items
+  // stay visible and unusually-heavy ones don't dwarf the trailer.
+  const gearRadius=(wt)=>Math.min(30,Math.max(5,Math.sqrt(Math.max(0,wt))*1.98));
   gear.forEach(g=>{
     if(!document.getElementById('ck_'+g.id)?.checked)return;
     const pos=parseFloat(document.getElementById('ps_'+g.id)?.value)||0;
-    h+=`<circle cx="${bx(pos)}" cy="${gearY}" r="${gearDotR}" fill="#f59e0b" opacity="0.95" stroke="#0f0f10" stroke-width="2"/>`;
+    const wt=parseFloat(document.getElementById('wt_'+g.id)?.value)||0;
+    const r=gearRadius(wt);
+    const cy=gY-deckPx-r;  // dot bottom touches deck floor
+    h+=`<circle cx="${bx(pos)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#f59e0b" opacity="0.9" stroke="#0f0f10" stroke-width="1.5"/>`;
   });
 
   // ── Car CG marker — solid vertical down to deck, bold green label.
@@ -562,8 +589,8 @@ function draw(p){
   // ── Nose gap annotation — bold orange to match gear dots, at 2/3 box height ──
   if(p.nd>2){
     const n1=bx(0),n2=bx(p.nd),ny=labelY+4;
-    h+=`<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#f59e0b" stroke-width="0.8" marker-end="url(#ar)" marker-start="url(#ar)" opacity="0.85"/>`;
-    h+=`<text x="${(n1+n2)/2}" y="${ny-3}" text-anchor="middle" font-size="9" font-weight="600" fill="#f59e0b" font-family="DM Sans,sans-serif">${p.nd.toFixed(1)}"</text>`;
+    h+=`<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#f59e0b" stroke-width="2" marker-end="url(#ar)" marker-start="url(#ar)" opacity="0.9"/>`;
+    h+=`<text x="${(n1+n2)/2}" y="${ny-6}" text-anchor="middle" font-size="14" font-weight="600" fill="#f59e0b" font-family="DM Sans,sans-serif">${p.nd.toFixed(1)}"</text>`;
   }
 
   svg.innerHTML=h;
