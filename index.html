@@ -78,6 +78,15 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .gtbtn{font-family:'DM Sans',sans-serif;font-size:.66rem;font-weight:500;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.25rem .55rem;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.03em}
 .gtbtn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
 .gtbtn:active{background:var(--bg)}
+.pos-readout{display:flex;align-items:baseline;gap:.5rem;margin:.2rem 0}
+.pos-readout-val{font-family:'DM Mono',monospace;font-size:1.15rem;font-weight:500;color:var(--ok)}
+.pos-readout-lbl{font-size:.7rem;color:var(--tx3)}
+.gpos{display:flex;align-items:center;gap:.8rem;margin-top:.35rem;padding-left:25px;font-size:.7rem;color:var(--tx3)}
+.gpos-val{font-family:'DM Mono',monospace;color:var(--tx2)}
+/* SVG drag affordances */
+#svg [data-drag]{cursor:grab}
+#svg [data-drag]:active{cursor:grabbing}
+#svg.dragging,#svg.dragging *{cursor:grabbing !important}
 </style>
 </head>
 <body>
@@ -114,14 +123,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
   <div class="tpanel active" id="tab-car">
     <div class="sec">
       <div class="poscard">
-        <div class="poscard-title">Car position — nose from front of box</div>
-        <div class="srow">
-          <label>Nose from front wall</label>
-          <input type="range" id="nsl" min="0" max="100" value="57.5" step="0.5">
-          <span class="sval"><span id="nv">57.5</span>"</span>
+        <div class="poscard-title">Car position</div>
+        <div class="pos-readout">
+          <span class="pos-readout-val"><span id="nv">57.5</span>"</span>
+          <span class="pos-readout-lbl">from front of box</span>
         </div>
-        <div class="snote">0 = nose against front wall · auto-clamps to keep car inside box</div>
+        <div class="snote">Drag the car in the diagram to reposition · auto-clamps inside box</div>
       </div>
+      <input type="hidden" id="nsl" value="57.5">
     </div>
     <div class="sec">
       <div class="stitle">Race car weights</div>
@@ -156,7 +165,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
           <button class="gtbtn" onclick="toggleAllGear(false)">All off</button>
         </div>
       </div>
-      <div class="snote" style="margin-bottom:.6rem">Check to include · tap name to edit · set weight · drag slider to place from front of box</div>
+      <div class="snote" style="margin-bottom:.6rem">Check to include · tap name to edit · set weight · drag dots in diagram to position</div>
       <div class="glist" id="glist"></div>
     </div>
   </div>
@@ -167,20 +176,20 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 <script>
 const LIM=600,WRN=540,GLIM=7715,SK='twc3';
 const DG=[
-  {id:'wheels',name:'Wheels & tires',   wt:182,pos:180,on:true},
-  {id:'fuel',  name:'Fuel',             wt:60, pos:210,on:true},
-  {id:'rack',  name:'Tire rack',        wt:20, pos:170,on:true},
-  {id:'jack',  name:'Jack & stands',    wt:40, pos:160,on:true},
-  {id:'tools', name:'Tools',            wt:30, pos:150,on:true},
-  {id:'gen',   name:'Generator/batt',   wt:100,pos:130,on:true},
-  {id:'pump',  name:'Tire pump',        wt:8,  pos:155,on:false},
-  {id:'spray', name:'Water sprayer',    wt:13, pos:200,on:false},
-  {id:'cooler',name:'Cooler',           wt:50, pos:165,on:false},
-  {id:'bench', name:'Bench',            wt:20, pos:220,on:false},
-  {id:'table', name:'Table',            wt:10, pos:215,on:false},
-  {id:'chairs',name:'Chairs',           wt:5,  pos:230,on:false},
-  {id:'skate', name:'Skateboard',       wt:25, pos:225,on:false},
-  {id:'bike',  name:'Bike',             wt:50, pos:228,on:false},
+  {id:'wheels',name:'Wheels & tires',   wt:182,pos:180,posY:0,on:true},
+  {id:'fuel',  name:'Fuel',             wt:60, pos:210,posY:0,on:true},
+  {id:'rack',  name:'Tire rack',        wt:20, pos:170,posY:0,on:true},
+  {id:'jack',  name:'Jack & stands',    wt:40, pos:160,posY:0,on:true},
+  {id:'tools', name:'Tools',            wt:30, pos:150,posY:0,on:true},
+  {id:'gen',   name:'Generator/batt',   wt:100,pos:130,posY:0,on:true},
+  {id:'pump',  name:'Tire pump',        wt:8,  pos:155,posY:0,on:false},
+  {id:'spray', name:'Water sprayer',    wt:13, pos:200,posY:0,on:false},
+  {id:'cooler',name:'Cooler',           wt:50, pos:165,posY:0,on:false},
+  {id:'bench', name:'Bench',            wt:20, pos:220,posY:0,on:false},
+  {id:'table', name:'Table',            wt:10, pos:215,posY:0,on:false},
+  {id:'chairs',name:'Chairs',           wt:5,  pos:230,posY:0,on:false},
+  {id:'skate', name:'Skateboard',       wt:25, pos:225,posY:0,on:false},
+  {id:'bike',  name:'Bike',             wt:50, pos:228,posY:0,on:false},
 ];
 let gear=JSON.parse(JSON.stringify(DG));
 
@@ -288,7 +297,8 @@ function save(){
         id:g.id,
         name:document.getElementById('nm_'+g.id)?.value??g.name,
         wt:parseFloat(document.getElementById('wt_'+g.id)?.value??g.wt),
-        pos:parseFloat(document.getElementById('ps_'+g.id)?.value??g.pos),
+        pos:g.pos,
+        posY:g.posY||0,
         on:document.getElementById('ck_'+g.id)?.checked??g.on
       }))
     };
@@ -305,17 +315,15 @@ function load(){
     sv('h2b',s.h2b);sv('b2a',s.b2a);sv('asp',s.asp);sv('a2e',s.a2e);sv('twt',s.twt);
     sv('carFW',s.carFW);sv('carRW',s.carRW);sv('wb',s.wb);sv('no',s.no);sv('to',s.to);
     if(s.nsl!=null){document.getElementById('nsl').value=s.nsl;document.getElementById('nv').textContent=parseFloat(s.nsl).toFixed(1);}
-    if(s.gear)s.gear.forEach(sg=>{const g=gear.find(x=>x.id===sg.id);if(g){g.name=sg.name;g.wt=sg.wt;g.pos=sg.pos;g.on=sg.on;}});
+    if(s.gear)s.gear.forEach(sg=>{const g=gear.find(x=>x.id===sg.id);if(g){g.name=sg.name;g.wt=sg.wt;g.pos=sg.pos;g.posY=sg.posY||0;g.on=sg.on;}});
   }catch(e){}
 }
 
 function boxLen(){return fv('b2a')+fv('asp')+fv('a2e');}
 
 function buildGear(){
-  const bl=boxLen();
   const c=document.getElementById('glist');c.innerHTML='';
   gear.forEach(g=>{
-    const cp=Math.min(g.pos,bl);
     const card=document.createElement('div');
     card.className='gcard'+(g.on?'':' off');card.id='gc_'+g.id;
     card.innerHTML=`
@@ -324,21 +332,27 @@ function buildGear(){
         <input type="text" class="gname" id="nm_${g.id}" value="${g.name}" placeholder="Item name">
         <div class="gwt"><input type="number" id="wt_${g.id}" value="${g.wt}" min="0" step="1"><span class="gwtu">lbs</span></div>
       </div>
-      <div class="gsrow">
-        <span class="gslbl">From front of box</span>
-        <input type="range" id="ps_${g.id}" min="0" max="${Math.round(bl)}" value="${cp}" step="1">
-        <span class="gsval"><span id="pv_${g.id}">${cp}</span>"</span>
+      <div class="gpos">
+        <span>Position</span>
+        <span class="gpos-val"><span id="px_${g.id}">${g.pos.toFixed(1)}</span>" from front<span id="py_${g.id}">${(g.posY||0)>0.5?' · '+(g.posY||0).toFixed(0)+'" above deck':''}</span></span>
       </div>`;
     c.appendChild(card);
     const ck=card.querySelector('#ck_'+g.id);
-    const ps=card.querySelector('#ps_'+g.id);
-    const pv=card.querySelector('#pv_'+g.id);
     const wt=card.querySelector('#wt_'+g.id);
     const nm=card.querySelector('#nm_'+g.id);
     ck.addEventListener('change',()=>{card.classList.toggle('off',!ck.checked);calc();qsave();});
-    ps.addEventListener('input',()=>{pv.textContent=ps.value;calc();qsave();});
     wt.addEventListener('input',()=>{calc();qsave();});
     nm.addEventListener('input',qsave);
+  });
+}
+
+// Refresh the inline position readouts inside each gear card without rebuilding.
+function refreshGearReadouts(){
+  gear.forEach(g=>{
+    const px=document.getElementById('px_'+g.id);
+    const py=document.getElementById('py_'+g.id);
+    if(px)px.textContent=g.pos.toFixed(1);
+    if(py)py.textContent=(g.posY||0)>0.5?' · '+(g.posY||0).toFixed(0)+'" above deck':'';
   });
 }
 
@@ -372,13 +386,14 @@ function calc(){
     let twG=0,gWt=0;
     gear.forEach(g=>{
       const ck=document.getElementById('ck_'+g.id);
+      // Clamp X to box length (if user dragged outside, or box shrank)
+      if(g.pos>bl)g.pos=bl;
+      if(g.pos<0)g.pos=0;
       if(!ck?.checked)return;
-      const pos=parseFloat(document.getElementById('ps_'+g.id)?.value)||0;
       const wt=parseFloat(document.getElementById('wt_'+g.id)?.value)||0;
-      twG+=tw(wt,h2b+pos);gWt+=wt;
-      const gs=document.getElementById('ps_'+g.id);
-      if(gs){gs.max=Math.round(bl);if(parseFloat(gs.value)>bl){gs.value=Math.round(bl);const pv=document.getElementById('pv_'+g.id);if(pv)pv.textContent=Math.round(bl);}}
+      twG+=tw(wt,h2b+g.pos);gWt+=wt;
     });
+    refreshGearReadouts();
 
     const twT=twt*0.10;
     const tot=Math.round(twCar+twG+twT);
@@ -433,13 +448,14 @@ const SIL={
   cNose:811, cTail:7401,
   // Car ARTWORK vertical bounds
   cArtTop:2453,
-  // cArtBottom: y of the visible bottom of the tires in car-SVG units.
-  // Set empirically from rendered output — the previous value (4515) was
-  // the bottom of the wheel circle path bounding box, but visible tire
-  // bottoms sit higher because the wheels are inset above the path extent.
-  // If you re-trace the car art, eyeball where the tire actually touches
-  // the ground in the SVG and update this number.
-  cArtBottom:4200,
+  // cArtBottom: the y-coordinate (in car-SVG units) that should be anchored
+  // to the deck floor in the rendered diagram.
+  // SIGN CONVENTION: LARGER values move the car UP on screen, smaller values
+  // move it DOWN. That's because the transform places this y-point at the
+  // deck floor — if you claim the bottom is higher in the SVG than it really
+  // is, the real wheel-bottoms end up above the deck (and vice versa).
+  // 4800 is empirically tuned; adjust ±200 to nudge ~10px on screen.
+  cArtBottom:4800,
   // Shared real-world scale
   unitsPerInch:35.6653,
   trailerEl:null, carEl:null, ready:false
@@ -526,6 +542,10 @@ function silInner(srcEl,classMap){
   }).join('');
 }
 
+// Shared view state for drag handlers — populated each time draw() runs so
+// the drag math can convert mouse coords back to inches without re-deriving.
+const viewState={span:0,xL:50,xR:656,pxPerIn:0,gY:230,deckPx:0,bl:0,h2b:0,carL:0};
+
 function draw(p){
   const svg=document.getElementById('svg');
   const xL=50,xR=656,span=p.h2b+p.bl+8;
@@ -542,6 +562,11 @@ function draw(p){
   // Labels positioned 2/3 of the way down the box interior
   const labelY=boxTopY+(boxHeightPx*0.67);
 
+  // Publish view state for drag handlers
+  viewState.span=span; viewState.xL=xL; viewState.xR=xR;
+  viewState.pxPerIn=pxPerIn; viewState.gY=gY; viewState.deckPx=deckPx;
+  viewState.bl=p.bl; viewState.h2b=p.h2b; viewState.carL=p.no+p.wb+p.to;
+
   let h=`<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
 
   // ── Trailer silhouette ──
@@ -556,7 +581,7 @@ function draw(p){
     h+=`<rect x="${bx(0)}" y="${boxTopY}" width="${bx(p.bl)-bx(0)}" height="${boxHeightPx}" rx="3" fill="#3d4a55" opacity="0.4"/>`;
   }
 
-  // ── Car silhouette ──
+  // ── Car silhouette + invisible drag overlay ──
   if(SIL.ready){
     const cSpan=(SIL.cTail-SIL.cNose);
     const cSpanReal=p.no+p.wb+p.to;
@@ -565,48 +590,140 @@ function draw(p){
     const cDx=carNosePx-(SIL.cNose*cScale);
     const cDy=(gY-deckPx)-(SIL.cArtBottom*cScale);
     h+=`<g transform="translate(${cDx.toFixed(2)},${cDy.toFixed(2)}) scale(${cScale.toFixed(5)})">${silInner(SIL.carEl,CAR_CLASS_ATTRS)}</g>`;
+    // Drag rectangle: covers visible car bounding box. Transparent fill so
+    // it catches pointer events without obscuring the silhouette.
+    const carHeightPx=(SIL.cArtBottom-SIL.cArtTop)*cScale;
+    const carTopY=(gY-deckPx)-carHeightPx;
+    const carLeftPx=bx(p.nd);
+    const carRightPx=bx(p.nd+cSpanReal);
+    h+=`<rect data-drag="car" x="${carLeftPx.toFixed(1)}" y="${carTopY.toFixed(1)}" width="${(carRightPx-carLeftPx).toFixed(1)}" height="${(gY-deckPx-carTopY).toFixed(1)}" fill="transparent" stroke="none"/>`;
   }
 
-  // ── Gear dots — sized by weight (sqrt scaling so area is proportional
-  // to weight). 200 lb → r=28 anchor, clamped to [5, 30] so tiny items
-  // stay visible and unusually-heavy ones don't dwarf the trailer.
+  // ── Gear dots — sized by weight (sqrt scaling so area ≈ weight).
+  // Draw HEAVIEST FIRST so smaller dots render on top and stay clickable.
+  // posY (visual height above deck floor, in inches) lets the user spread
+  // overlapping items vertically; it does NOT affect TW calculation.
   const gearRadius=(wt)=>Math.min(30,Math.max(5,Math.sqrt(Math.max(0,wt))*1.98));
-  gear.forEach(g=>{
-    if(!document.getElementById('ck_'+g.id)?.checked)return;
-    const pos=parseFloat(document.getElementById('ps_'+g.id)?.value)||0;
+  const drawList=gear.filter(g=>document.getElementById('ck_'+g.id)?.checked).map(g=>{
     const wt=parseFloat(document.getElementById('wt_'+g.id)?.value)||0;
-    const r=gearRadius(wt);
-    const cy=gY-deckPx-r;  // dot bottom touches deck floor
-    h+=`<circle cx="${bx(pos)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#f59e0b" opacity="0.9" stroke="#0f0f10" stroke-width="1.5"/>`;
+    return {g,wt,r:gearRadius(wt)};
+  }).sort((a,b)=>b.wt-a.wt);
+  drawList.forEach(({g,r})=>{
+    const yOffset=(g.posY||0)*pxPerIn;
+    const cy=(gY-deckPx)-r-yOffset; // dot bottom rests on (deck + posY inches)
+    h+=`<circle data-drag="gear" data-gear-id="${g.id}" cx="${bx(g.pos).toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#f59e0b" opacity="0.9" stroke="#0f0f10" stroke-width="1.5"/>`;
   });
 
   // ── Car CG marker — solid vertical down to deck, bold green label.
   const cCG=(p.cFA*fv('carFW')+p.cRA*fv('carRW'))/(fv('carFW')+fv('carRW'));
   const cgx=bx(cCG);
-  h+=`<line x1="${cgx}" y1="${boxTopY+10}" x2="${cgx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.85"/>`;
-  h+=`<text x="${cgx+4}" y="${labelY}" text-anchor="start" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif">car CG</text>`;
+  h+=`<line x1="${cgx}" y1="${boxTopY+10}" x2="${cgx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.85" pointer-events="none"/>`;
+  h+=`<text x="${cgx+4}" y="${labelY}" text-anchor="start" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif" pointer-events="none">car CG</text>`;
 
   // ── Nose gap annotation — bold orange to match gear dots, at 2/3 box height ──
   if(p.nd>2){
     const n1=bx(0),n2=bx(p.nd),ny=labelY+4;
-    h+=`<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#f59e0b" stroke-width="2" marker-end="url(#ar)" marker-start="url(#ar)" opacity="0.9"/>`;
-    h+=`<text x="${(n1+n2)/2}" y="${ny-6}" text-anchor="middle" font-size="14" font-weight="600" fill="#f59e0b" font-family="DM Sans,sans-serif">${p.nd.toFixed(1)}"</text>`;
+    h+=`<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#f59e0b" stroke-width="2" marker-end="url(#ar)" marker-start="url(#ar)" opacity="0.9" pointer-events="none"/>`;
+    h+=`<text x="${(n1+n2)/2}" y="${ny-6}" text-anchor="middle" font-size="14" font-weight="600" fill="#f59e0b" font-family="DM Sans,sans-serif" pointer-events="none">${p.nd.toFixed(1)}"</text>`;
   }
 
   svg.innerHTML=h;
 }
 
+// ── Drag-to-position ─────────────────────────────────────────────
+// SVG event delegation. Both car (X only) and gear (X and Y) draggable.
+// Touch and mouse supported. Coordinate conversion chain:
+//   client pixels → SVG viewBox units → real-world inches
+let dragState=null;
+const snap=v=>Math.round(v*2)/2; // 0.5" precision
+
+function getEvtPoint(e){
+  const t=e.touches?e.touches[0]:e;
+  return {clientX:t.clientX,clientY:t.clientY};
+}
+function svgCoords(e){
+  const svg=document.getElementById('svg');
+  const rect=svg.getBoundingClientRect();
+  const {clientX,clientY}=getEvtPoint(e);
+  return {
+    x:((clientX-rect.left)/rect.width)*680,
+    y:((clientY-rect.top)/rect.height)*260
+  };
+}
+// Convert SVG x-coordinate to inches from hitch
+function svgXtoInchesFromHitch(svgX){
+  return (svgX-viewState.xL)*viewState.span/(viewState.xR-viewState.xL);
+}
+
+function dragStart(e){
+  const target=e.target.closest('[data-drag]');
+  if(!target)return;
+  const type=target.dataset.drag;
+  const {x,y}=svgCoords(e);
+  if(type==='gear'){
+    const id=target.dataset.gearId;
+    const g=gear.find(it=>it.id===id);
+    if(!g)return;
+    dragState={type,id,startX:x,startY:y,startPos:g.pos,startPosY:g.posY||0};
+  }else if(type==='car'){
+    const nd=parseFloat(document.getElementById('nsl').value)||0;
+    dragState={type,startX:x,startY:y,startNd:nd};
+  }
+  e.preventDefault();
+  document.getElementById('svg').classList.add('dragging');
+}
+
+function dragMove(e){
+  if(!dragState)return;
+  e.preventDefault();
+  const {x,y}=svgCoords(e);
+  const dx=x-dragState.startX;
+  const dy=y-dragState.startY;
+  // Convert pixel deltas to inch deltas
+  const dInchX=dx*viewState.span/(viewState.xR-viewState.xL);
+  const dInchY=-dy/viewState.pxPerIn; // SVG y grows downward; flip so positive = up
+  if(dragState.type==='gear'){
+    const g=gear.find(it=>it.id===dragState.id);
+    if(!g)return;
+    g.pos=Math.max(0,Math.min(viewState.bl,snap(dragState.startPos+dInchX)));
+    // Y range: 0 (on deck) up to box interior height ≈ 82"
+    g.posY=Math.max(0,Math.min(82,snap(dragState.startPosY+dInchY)));
+  }else if(dragState.type==='car'){
+    const maxNd=Math.max(0,viewState.bl-viewState.carL-1);
+    const newNd=Math.max(0,Math.min(maxNd,snap(dragState.startNd+dInchX)));
+    const nsl=document.getElementById('nsl');
+    nsl.value=newNd;
+    document.getElementById('nv').textContent=newNd.toFixed(1);
+  }
+  calc();
+}
+
+function dragEnd(){
+  if(!dragState)return;
+  dragState=null;
+  document.getElementById('svg').classList.remove('dragging');
+  qsave();
+}
+
+function attachDragHandlers(){
+  const svg=document.getElementById('svg');
+  svg.addEventListener('mousedown',dragStart);
+  svg.addEventListener('touchstart',dragStart,{passive:false});
+  window.addEventListener('mousemove',dragMove);
+  window.addEventListener('touchmove',dragMove,{passive:false});
+  window.addEventListener('mouseup',dragEnd);
+  window.addEventListener('touchend',dragEnd);
+  window.addEventListener('touchcancel',dragEnd);
+}
+
 function wire(){
   document.querySelectorAll('input[type=number]').forEach(el=>el.addEventListener('input',()=>{calc();qsave();}));
-  document.getElementById('nsl').addEventListener('input',()=>{
-    document.getElementById('nv').textContent=parseFloat(document.getElementById('nsl').value).toFixed(1);
-    calc();qsave();
-  });
 }
 
 document.addEventListener('DOMContentLoaded',()=>{
   load();buildGear();wire();calc();
   loadSilhouettes();
+  attachDragHandlers();
   window.addEventListener('resize',setOff);
 });
 </script>
