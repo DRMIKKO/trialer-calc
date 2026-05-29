@@ -9,17 +9,28 @@
 :root{--bg:#0f0f10;--bg2:#18181b;--bg3:#222226;--bd:#2e2e34;--bd2:#3e3e46;--tx:#e8e8ec;--tx2:#9494a0;--tx3:#5c5c6a;--ac:#4f8ef7;--ok:#34d399;--ok-bg:#0d2e22;--wn:#fbbf24;--wn-bg:#2a1f00;--bad:#f87171;--bad-bg:#2a0d0d;--am:#f59e0b;--r:8px;--r2:12px}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
-#sticky{position:fixed;top:0;left:0;right:0;background:var(--bg);z-index:200;border-bottom:1px solid var(--bd)}
-/* Dashboard (sticky): cog + TW hero gauge + diagram(with GTW ground bar) */
-.dash{max-width:680px;margin:0 auto;padding:0 1rem}
-.dash-top{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.45rem .15rem .1rem}
-.dash-lbl{font-size:.6rem;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em}
+
+/* ── Responsive shell: stacked (portrait) → two-pane (landscape/wide) ── */
+.app{display:flex;flex-direction:column}
+.dash{position:sticky;top:0;z-index:200;background:var(--bg);border-bottom:1px solid var(--bd)}
+.dash-inner{max-width:680px;margin:0 auto;padding:0 1rem .4rem}
+.cargo-inner{max-width:680px;margin:0 auto;padding:.5rem 1rem 3rem}
+.dash-top{display:flex;align-items:center;justify-content:flex-end;padding:.4rem .15rem .1rem}
 .cog-btn{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx2);padding:.35rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:color .15s,border-color .15s,background .15s;flex-shrink:0}
 .cog-btn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
 .cog-btn:active{background:var(--bg)}
-.tw-hero{display:block;width:100%;max-width:330px;height:auto;max-height:158px;margin:0 auto}
-.dgwrap{padding:0 0 .35rem;background:var(--bg)}
-/* Setup overlay */
+.tw-hero{display:block;width:100%;max-width:330px;height:auto;max-height:152px;margin:0 auto}
+.dgwrap{padding:0 0 .25rem;background:var(--bg)}
+
+@media (min-width:760px){
+  .app{flex-direction:row;align-items:flex-start;max-width:1200px;margin:0 auto}
+  .dash{flex:0 0 56%;border-bottom:none;border-right:1px solid var(--bd);align-self:stretch}
+  .dash-inner{padding:.5rem 1rem 1rem}
+  .cargo{flex:1 1 44%;min-width:0}
+  .cargo-inner{padding:.7rem 1rem 3rem}
+}
+
+/* ── Setup overlay ── */
 .overlay{position:fixed;inset:0;z-index:500;display:flex;align-items:flex-start;justify-content:center;background:rgba(0,0,0,.6);overflow-y:auto;padding:1.5rem 1rem 3rem}
 .overlay[hidden]{display:none}
 .overlay-card{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);width:100%;max-width:480px;margin:auto}
@@ -28,7 +39,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .overlay-close{background:none;border:none;color:var(--tx2);font-size:1.05rem;cursor:pointer;line-height:1;padding:.25rem .45rem;border-radius:var(--r)}
 .overlay-close:hover{color:var(--tx);background:var(--bg3)}
 .overlay-body{padding:.2rem 1rem 1rem}
-#body{max-width:680px;margin:0 auto;padding:0 1rem 3rem}
 .sec{padding:.9rem 0 0}.sec+.sec{border-top:1px solid var(--bd);margin-top:.9rem}
 .stitle{font-size:.63rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--tx3);margin-bottom:.6rem}
 .frow{display:flex;align-items:center;gap:.75rem;margin-bottom:.4rem}
@@ -40,29 +50,35 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 .pos-readout{display:flex;align-items:baseline;gap:.5rem;margin:.2rem 0}
 .pos-readout-val{font-family:'DM Mono',monospace;font-size:1.15rem;font-weight:500;color:var(--ok)}
 .pos-readout-lbl{font-size:.7rem;color:var(--tx3)}
-/* Cargo grid */
-.cargo-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:.4rem;gap:.5rem;padding-top:.15rem}
+
+/* ── Cargo grid (container-responsive) ── */
+.cargo-hdr{display:flex;justify-content:flex-end;align-items:center;margin-bottom:.45rem;gap:.5rem}
 .cargo-toggles{display:flex;gap:.35rem}
 .gtbtn{font-family:'DM Sans',sans-serif;font-size:.66rem;font-weight:500;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.25rem .55rem;cursor:pointer;transition:color .15s,border-color .15s,background .15s;letter-spacing:.03em}
 .gtbtn:hover{color:var(--tx);border-color:var(--bd2);background:var(--bg3)}
 .gtbtn:active{background:var(--bg)}
-.snote{font-size:.63rem;color:var(--tx3);margin-top:.2rem}
-.cargo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:.45rem}
-.ccell{background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r2);padding:.5rem .55rem;transition:opacity .15s,border-color .15s,background .15s}
+.cargo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:.35rem}
+.ccell{position:relative;background:var(--bg2);border:1px solid var(--bd);border-radius:var(--r);padding:.4rem .45rem;transition:opacity .15s,border-color .15s,background .15s}
 .ccell.off{opacity:.42}
 .ccell.hl{border-color:var(--am);background:var(--bg3)}
-.ccell-top{display:flex;align-items:center;gap:.4rem;margin-bottom:.45rem}
-.gchk{width:17px;height:17px;flex-shrink:0;accent-color:var(--ac);cursor:pointer}
-.cname{flex:1;min-width:0;font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:500;color:var(--tx);background:transparent;border:1px solid transparent;border-radius:var(--r);padding:.15rem .3rem;transition:border-color .15s,background .15s}
+.ccell-top{display:flex;align-items:center;gap:.3rem;margin-bottom:.32rem}
+.gchk{width:15px;height:15px;flex-shrink:0;accent-color:var(--ok);cursor:pointer}
+.cname{flex:1;min-width:0;font-family:'DM Sans',sans-serif;font-size:.74rem;font-weight:500;color:var(--tx);background:transparent;border:1px solid transparent;border-radius:6px;padding:.1rem .25rem;transition:border-color .15s,background .15s}
 .cname:hover{border-color:var(--bd2)}.cname:focus{border-color:var(--ac);background:var(--bg3);outline:none}
-.ccell-wt{display:flex;align-items:center;gap:.3rem}
-.ccell-wt input[type=number]{flex:1;min-width:0;padding:.2rem .4rem;font-family:'DM Mono',monospace;font-size:.8rem;background:var(--bg3);border:1px solid var(--bd);border-radius:var(--r);color:var(--tx);text-align:right;-moz-appearance:textfield}
+.ccell-del{flex-shrink:0;width:16px;height:16px;display:flex;align-items:center;justify-content:center;background:none;border:none;color:var(--tx3);font-size:.85rem;line-height:1;cursor:pointer;border-radius:4px;opacity:.55;transition:color .15s,opacity .15s,background .15s}
+.ccell-del:hover{color:var(--bad);opacity:1;background:var(--bg3)}
+.ccell-wt{display:flex;align-items:center;gap:.25rem}
+.ccell-wt input[type=number]{flex:1;min-width:0;padding:.13rem .3rem;font-family:'DM Mono',monospace;font-size:.74rem;background:var(--bg3);border:1px solid var(--bd);border-radius:6px;color:var(--tx);text-align:right;-moz-appearance:textfield}
 .ccell-wt input[type=number]:focus{outline:none;border-color:var(--ac)}
 .ccell-wt input[type=number]::-webkit-outer-spin-button,.ccell-wt input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
-.gwtu{font-size:.66rem;color:var(--tx3);flex-shrink:0}
+.gwtu{font-size:.62rem;color:var(--tx3);flex-shrink:0}
+.ccell-add{display:flex;align-items:center;justify-content:center;min-height:62px;background:none;border:1px dashed var(--bd2);border-radius:var(--r);color:var(--tx3);cursor:pointer;font-family:inherit;transition:color .15s,border-color .15s,background .15s}
+.ccell-add:hover{color:var(--ok);border-color:var(--ok);background:var(--bg2)}
+.ccell-add span{font-size:1.4rem;line-height:1;font-weight:300}
 #savind{font-size:.6rem;color:var(--tx3);text-align:center;padding:.8rem 0 0;opacity:0;transition:opacity .4s}
 #savind.show{opacity:1}
-/* SVG drag affordances */
+
+/* ── SVG drag affordances ── */
 #svg [data-drag]{cursor:grab}
 #svg [data-drag]:active{cursor:grabbing}
 #svg.dragging,#svg.dragging *{cursor:grabbing !important}
@@ -73,37 +89,39 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--tx);min-h
 </head>
 <body>
 
-<div id="sticky">
-  <div class="dash">
-    <div class="dash-top">
-      <span class="dash-lbl">Tongue weight · target 600 lb</span>
-      <button class="cog-btn" onclick="openSetup()" aria-label="Open setup" title="Setup">
-        <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      </button>
+<div class="app">
+  <header class="dash">
+    <div class="dash-inner">
+      <div class="dash-top">
+        <button class="cog-btn" onclick="openSetup()" aria-label="Open setup" title="Setup">
+          <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+      </div>
+      <svg class="tw-hero" id="tw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg>
+      <div class="dgwrap">
+        <svg id="svg" width="100%" viewBox="0 0 680 260" role="img">
+          <title>Trailer load diagram</title>
+          <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+        </svg>
+      </div>
     </div>
-    <svg class="tw-hero" id="tw-pie" viewBox="0 0 300 170" preserveAspectRatio="xMidYMid meet"></svg>
-    <div class="dgwrap">
-      <svg id="svg" width="100%" viewBox="0 0 680 260" role="img">
-        <title>Trailer load diagram</title>
-        <defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
-      </svg>
+  </header>
+
+  <main class="cargo">
+    <div class="cargo-inner">
+      <div class="cargo-hdr">
+        <div class="cargo-toggles">
+          <button class="gtbtn" onclick="toggleAllGear(true)">All on</button>
+          <button class="gtbtn" onclick="toggleAllGear(false)">All off</button>
+        </div>
+      </div>
+      <div class="cargo-grid" id="glist"></div>
+      <div id="savind">Saved</div>
     </div>
-  </div>
+  </main>
 </div>
 
-<div id="body">
-  <input type="hidden" id="nsl" value="57.5">
-  <div class="cargo-hdr">
-    <span class="stitle" style="margin:0">Cargo</span>
-    <div class="cargo-toggles">
-      <button class="gtbtn" onclick="toggleAllGear(true)">All on</button>
-      <button class="gtbtn" onclick="toggleAllGear(false)">All off</button>
-    </div>
-  </div>
-  <div class="snote" style="margin-bottom:.6rem">Check to include · tap name to edit · set weight · drag dots in the diagram to position</div>
-  <div class="cargo-grid" id="glist"></div>
-  <div id="savind">Saved</div>
-</div>
+<input type="hidden" id="nsl" value="57.5">
 
 <!-- Setup overlay (behind the cog): car + trailer config -->
 <div id="setup-overlay" class="overlay" hidden onclick="if(event.target===this)closeSetup()">
@@ -151,7 +169,7 @@ const DG=[
   {id:'rack',  name:'Tire rack',        wt:20, pos:170,posY:0,on:true},
   {id:'jack',  name:'Jack & stands',    wt:40, pos:160,posY:0,on:true},
   {id:'tools', name:'Tools',            wt:30, pos:150,posY:0,on:true},
-  {id:'gen',   name:'Generator/batt',   wt:100,pos:130,posY:0,on:true},
+  {id:'gen',   name:'Generator',        wt:100,pos:130,posY:0,on:true},
   {id:'pump',  name:'Tire pump',        wt:8,  pos:155,posY:0,on:false},
   {id:'spray', name:'Water sprayer',    wt:13, pos:200,posY:0,on:false},
   {id:'cooler',name:'Cooler',           wt:50, pos:165,posY:0,on:false},
@@ -164,12 +182,6 @@ const DG=[
 let gear=JSON.parse(JSON.stringify(DG));
 
 function fv(id){const e=document.getElementById(id);return e?parseFloat(e.value)||0:0;}
-
-function setOff(){
-  const h=document.getElementById('sticky').offsetHeight;
-  const b=document.getElementById('body');
-  if(b)b.style.paddingTop=(h+8)+'px';
-}
 
 // ── Setup overlay ──
 function openSetup(){
@@ -258,8 +270,7 @@ function drawGauge(svgId, value, kind){
 
 // ── Hover-link between cargo cells and diagram dots ─────────────
 // Tracks which cargo item is being hovered (in either place) so the matching
-// element in the other place can co-highlight. Persists across redraws so
-// dragging or recalculating doesn't lose the active highlight.
+// element in the other place can co-highlight. Persists across redraws.
 let hoveredGearId=null;
 function setGearHighlight(id){
   hoveredGearId=id;
@@ -301,7 +312,13 @@ function load(){
     sv('h2b',s.h2b);sv('b2a',s.b2a);sv('asp',s.asp);sv('a2e',s.a2e);sv('twt',s.twt);
     sv('carFW',s.carFW);sv('carRW',s.carRW);sv('wb',s.wb);sv('no',s.no);sv('to',s.to);
     if(s.nsl!=null){document.getElementById('nsl').value=s.nsl;document.getElementById('nv').textContent=parseFloat(s.nsl).toFixed(1);}
-    if(s.gear)s.gear.forEach(sg=>{const g=gear.find(x=>x.id===sg.id);if(g){g.name=sg.name;g.wt=sg.wt;g.pos=sg.pos;g.posY=sg.posY||0;g.on=sg.on;}});
+    // Stored cargo list is the source of truth (so custom adds AND deletes
+    // persist). Fall back to defaults only when nothing is stored.
+    if(Array.isArray(s.gear)){
+      gear=s.gear.map(sg=>({
+        id:sg.id, name:sg.name, wt:sg.wt, pos:sg.pos, posY:sg.posY||0, on:!!sg.on
+      }));
+    }
   }catch(e){}
 }
 
@@ -315,7 +332,8 @@ function buildGear(){
     card.innerHTML=`
       <div class="ccell-top">
         <input type="checkbox" class="gchk" id="ck_${g.id}" ${g.on?'checked':''}>
-        <input type="text" class="cname" id="nm_${g.id}" value="${g.name}" placeholder="Item">
+        <input type="text" class="cname" id="nm_${g.id}" value="${(g.name||'').replace(/"/g,'&quot;')}" placeholder="Item">
+        <button class="ccell-del" id="del_${g.id}" aria-label="Remove item" title="Remove">&#215;</button>
       </div>
       <div class="ccell-wt">
         <input type="number" id="wt_${g.id}" value="${g.wt}" min="0" step="1"><span class="gwtu">lbs</span>
@@ -324,18 +342,42 @@ function buildGear(){
     const ck=card.querySelector('#ck_'+g.id);
     const wt=card.querySelector('#wt_'+g.id);
     const nm=card.querySelector('#nm_'+g.id);
+    const del=card.querySelector('#del_'+g.id);
     ck.addEventListener('change',()=>{card.classList.toggle('off',!ck.checked);calc();qsave();});
     wt.addEventListener('input',()=>{calc();qsave();});
-    nm.addEventListener('input',qsave);
+    nm.addEventListener('input',()=>{const it=gear.find(x=>x.id===g.id);if(it)it.name=nm.value;qsave();});
+    del.addEventListener('click',()=>removeCargo(g.id));
     card.addEventListener('mouseenter',()=>setGearHighlight(g.id));
     card.addEventListener('mouseleave',()=>setGearHighlight(null));
   });
+  // ── "+" add tile ──
+  const add=document.createElement('button');
+  add.type='button';
+  add.className='ccell-add';
+  add.setAttribute('aria-label','Add cargo item');
+  add.innerHTML='<span>+</span>';
+  add.addEventListener('click',addCargo);
+  c.appendChild(add);
 }
 
-// Refresh inline position readouts inside cargo cells without rebuilding.
-// (Cells currently don't show position readouts — kept as a no-op stub
-// so the calc() call doesn't error. Re-implement if readouts come back.)
-function refreshGearReadouts(){ /* no-op */ }
+function addCargo(){
+  const id='c'+Date.now().toString(36);
+  const mid=Math.round((boxLen()||242)/2);
+  gear.push({id,name:'New item',wt:0,pos:mid,posY:0,on:true});
+  buildGear();
+  calc();
+  qsave();
+  const nm=document.getElementById('nm_'+id);
+  if(nm){nm.focus();nm.select();}
+}
+
+function removeCargo(id){
+  gear=gear.filter(g=>g.id!==id);
+  if(hoveredGearId===id)hoveredGearId=null;
+  buildGear();
+  calc();
+  qsave();
+}
 
 function calc(){
   try{
@@ -374,12 +416,10 @@ function calc(){
       const wt=parseFloat(document.getElementById('wt_'+g.id)?.value)||0;
       twG+=tw(wt,h2b+g.pos);gWt+=wt;
     });
-    refreshGearReadouts();
 
     const twT=twt*0.10;
     const tot=Math.round(twCar+twG+twT);
     const gtw=Math.round(twt+cFW+cRW+gWt);
-    const rem=LIM-tot;
     const gtwFrac=gtw/GLIM;
     const gtwOver=gtw>GLIM;
 
@@ -387,14 +427,11 @@ function calc(){
     drawGauge('tw-pie',tot,'tw');
 
     draw({h2b,bl,tFA,tRA,amid,nd,cFA,cRA,cTail,tot,tc,no,wb,to,gtw,gtwFrac,gtwOver});
-    setOff();
   }catch(e){console.error('calc error',e);}
 }
 
 // ── Silhouette asset cache ──
 // Both SVGs share a coordinate system at 35.6653 SVG-units per inch.
-// Anchor points are documented in each file's header comment; the
-// constants below are extracted from those.
 const SIL={
   // Trailer file horizontal anchors (SVG units in its own viewBox)
   tCoupler:1703.44, tBoxFront:3287.44, tBoxRear:11918.44,
@@ -405,22 +442,17 @@ const SIL={
   // Car file horizontal anchors
   cFAxle:2112.18, cRAxle:5838.33,
   // cTail: x of the visible rear bumper. Original handoff value was 7401
-  // (path extent max), but empirically the visible bumper sits well left of
-  // that — there's transparent path extent past the visible art. Tuned to
-  // 7100 so when nd is at max, the visible rear lands near the box rear wall.
-  // Adjust +/-100 to shift visible rear position ~5 px.
+  // (path extent max); empirically the visible bumper sits left of that, so
+  // tuned to 7100. Adjust +/-100 to shift visible rear position ~5 px.
   cNose:811, cTail:7100,
   // Car ARTWORK vertical bounds
   cArtTop:2453,
-  // cArtBottom: the y-coordinate (in car-SVG units) that should be anchored
-  // to the deck floor in the rendered diagram.
-  // SIGN CONVENTION: LARGER values move the car UP on screen, smaller values
-  // move it DOWN. That's because the transform places this y-point at the
-  // deck floor — if you claim the bottom is higher in the SVG than it really
-  // is, the real wheel-bottoms end up above the deck (and vice versa).
-  // 4650 is empirically tuned; adjust +/-200 to nudge ~10px on screen.
-  cArtBottom:4650,
-  // Shared real-world scale
+  // cArtBottom: y (in car-SVG units) anchored to the deck floor in the diagram.
+  // SIGN CONVENTION: LARGER values move the car UP on screen, smaller = DOWN.
+  // (The transform places this y at the deck floor; claim a higher bottom and
+  // the real wheels end up above the deck.) S03: nudged 4650 -> 4750 (~5px up)
+  // per request to lift the car slightly. Adjust +/-200 to nudge ~10px.
+  cArtBottom:4750,
   unitsPerInch:35.6653,
   trailerEl:null, carEl:null, ready:false
 };
@@ -440,10 +472,8 @@ async function loadSilhouettes(){
   }catch(e){console.error('silhouette load failed',e);}
 }
 
-// Class → explicit attribute maps. Trailer and car files happen to use the
-// SAME class names (st1, st2, etc.) for different things, so we need separate
-// maps per file. Apply inline because the embedded <style> block doesn't
-// reliably cascade once the SVG is parsed and injected into the calculator's DOM.
+// Class → explicit attribute maps. Trailer and car files use the SAME class
+// names (st1, st2, ...) for different things, so separate maps per file.
 const TRAILER_CLASS_ATTRS={
   st0:{opacity:'.9'},
   st1:{fill:'none',stroke:'#1a1a1a','stroke-width':'.79','opacity':'.7'},
@@ -456,18 +486,16 @@ const TRAILER_CLASS_ATTRS={
   st10:{display:'none'},
 };
 const CAR_CLASS_ATTRS={
-  st0:{fill:'none','stroke-width':'0'},     // outline reference layer — neutralize
-  st1:{fill:'#fff',opacity:'.7'},           // visible car body
-  st2:{fill:'#fff',opacity:'.19'},          // detail highlights
-  st3:{opacity:'.15'},                       // Generative_Object wrapper
-  st4:{opacity:'.45'},                       // Fill wrapper
+  st0:{fill:'none','stroke-width':'0'},
+  st1:{fill:'#fff',opacity:'.7'},
+  st2:{fill:'#fff',opacity:'.19'},
+  st3:{opacity:'.15'},
+  st4:{opacity:'.45'},
 };
 
 function silInner(srcEl,classMap){
   const clone=srcEl.cloneNode(true);
-  // Strip reference/hidden/generative layers entirely
   clone.querySelectorAll('#Dimensions, #Hidden, #Layer_2').forEach(n=>n.remove());
-  // Walk the tree and convert class-based styles to inline attributes
   clone.querySelectorAll('[class]').forEach(n=>{
     const classes=(n.getAttribute('class')||'').split(/\s+/);
     classes.forEach(c=>{
@@ -478,26 +506,20 @@ function silInner(srcEl,classMap){
     });
     n.removeAttribute('class');
   });
-  // Drop any <style> block from inside the silhouette
   clone.querySelectorAll('style').forEach(n=>n.remove());
-  // ── Targeted overrides (trailer only) ──
-  // The door panel inside box-body needs to be a touch lighter than the box body.
-  // The fender/wheels group should be a touch darker for visual separation.
   const fenderGroup=clone.querySelector('#fender-and-wheels');
   if(fenderGroup){
     fenderGroup.querySelectorAll('*').forEach(n=>{
       const f=n.getAttribute('fill');
-      if(f==='#2a3845')n.setAttribute('fill','#1a2330');   // wheel/fender body — darker than new body color
-      if(f==='#3a4855')n.setAttribute('fill','#2a3744');   // fender accent — darker
+      if(f==='#2a3845')n.setAttribute('fill','#1a2330');
+      if(f==='#3a4855')n.setAttribute('fill','#2a3744');
     });
   }
-  // The "door panel" inside box-body is the rect with st6 (lighter accent) —
-  // bump it slightly lighter for legibility.
   const boxBody=clone.querySelector('#box-body');
   if(boxBody){
     boxBody.querySelectorAll('rect').forEach(n=>{
       const f=n.getAttribute('fill');
-      if(f==='#3a4855')n.setAttribute('fill','#4a5765');   // door panel — lighter
+      if(f==='#3a4855')n.setAttribute('fill','#4a5765');
     });
   }
   return Array.from(clone.childNodes).map(n=>{
@@ -506,8 +528,7 @@ function silInner(srcEl,classMap){
   }).join('');
 }
 
-// Shared view state for drag handlers — populated each time draw() runs so
-// the drag math can convert mouse coords back to inches without re-deriving.
+// Shared view state for drag handlers — populated each time draw() runs.
 const viewState={span:0,xL:50,xR:656,pxPerIn:0,gY:230,deckPx:0,bl:0,h2b:0,carL:0};
 
 function draw(p){
@@ -518,36 +539,33 @@ function draw(p){
   const pxPerIn=(xR-xL)/span;
   const hx=sx(0);
 
-  // Vertical layout
-  const gY=230;                              // ground line y
-  const boxHeightPx=84*pxPerIn;              // 84" exterior box height
-  const deckPx=17*pxPerIn;                   // 17" deck height above ground
-  const boxTopY=gY-deckPx-boxHeightPx;       // top of trailer box
-  // Labels positioned 2/3 of the way down the box interior
+  const gY=230;
+  const boxHeightPx=84*pxPerIn;
+  const deckPx=17*pxPerIn;
+  const boxTopY=gY-deckPx-boxHeightPx;
   const labelY=boxTopY+(boxHeightPx*0.67);
 
-  // Publish view state for drag handlers
   viewState.span=span; viewState.xL=xL; viewState.xR=xR;
   viewState.pxPerIn=pxPerIn; viewState.gY=gY; viewState.deckPx=deckPx;
   viewState.bl=p.bl; viewState.h2b=p.h2b; viewState.carL=p.no+p.wb+p.to;
 
   let h=`<defs><marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`;
 
-  // ── GTW ground-plane bar ──
+  // ── GTW ground-plane bar — spans the trailer footprint (coupler → box rear) ──
   // Drawn FIRST so the trailer wheels render on top and appear to rest on it.
-  // Doubles as the ground line and the gross-trailer-weight capacity meter.
-  const barTop=gY, barH=13, barW=xR-xL;
+  // The track is aligned to the trailer's actual extents, not the diagram edges.
+  const barL=hx, barR=bx(p.bl), barTop=gY, barH=13, barW=barR-barL;
   const gtwFrac=Math.min(Math.max(p.gtwFrac,0),1);
   const barColor=p.gtwOver?'#ef4444':'#34d399';
-  h+=`<rect x="${xL}" y="${barTop}" width="${barW}" height="${barH}" rx="2.5" fill="rgba(255,255,255,0.06)"/>`;
+  h+=`<rect x="${barL.toFixed(1)}" y="${barTop}" width="${barW.toFixed(1)}" height="${barH}" rx="2.5" fill="rgba(255,255,255,0.06)"/>`;
   if(gtwFrac>0){
-    h+=`<rect x="${xL}" y="${barTop}" width="${(barW*gtwFrac).toFixed(1)}" height="${barH}" rx="2.5" fill="${barColor}" opacity="0.9" style="transition:width .35s,fill .25s"/>`;
+    h+=`<rect x="${barL.toFixed(1)}" y="${barTop}" width="${(barW*gtwFrac).toFixed(1)}" height="${barH}" rx="2.5" fill="${barColor}" opacity="0.9" style="transition:width .35s,fill .25s"/>`;
   }
   const gtwLbl=p.gtwOver
     ? `${p.gtw.toLocaleString()} / ${GLIM.toLocaleString()} lb · +${(p.gtw-GLIM).toLocaleString()} over`
     : `${p.gtw.toLocaleString()} / ${GLIM.toLocaleString()} lb · ${Math.round(gtwFrac*100)}%`;
-  h+=`<text x="${xL}" y="${barTop+barH+11}" font-size="10.5" font-weight="500" fill="${p.gtwOver?'#ef4444':'#9494a0'}" font-family="DM Sans,sans-serif">Gross trailer wt</text>`;
-  h+=`<text x="${xR}" y="${barTop+barH+11}" text-anchor="end" font-size="10.5" font-weight="600" fill="${p.gtwOver?'#ef4444':'#34d399'}" font-family="DM Sans,sans-serif">${gtwLbl}</text>`;
+  h+=`<text x="${barL.toFixed(1)}" y="${barTop+barH+11}" font-size="10.5" font-weight="500" fill="${p.gtwOver?'#ef4444':'#9494a0'}" font-family="DM Sans,sans-serif">Gross trailer wt</text>`;
+  h+=`<text x="${barR.toFixed(1)}" y="${barTop+barH+11}" text-anchor="end" font-size="10.5" font-weight="600" fill="${p.gtwOver?'#ef4444':'#34d399'}" font-family="DM Sans,sans-serif">${gtwLbl}</text>`;
 
   // ── Trailer silhouette ──
   if(SIL.ready){
@@ -570,8 +588,6 @@ function draw(p){
     const cDx=carNosePx-(SIL.cNose*cScale);
     const cDy=(gY-deckPx)-(SIL.cArtBottom*cScale);
     h+=`<g transform="translate(${cDx.toFixed(2)},${cDy.toFixed(2)}) scale(${cScale.toFixed(5)})">${silInner(SIL.carEl,CAR_CLASS_ATTRS)}</g>`;
-    // Drag rectangle: covers visible car bounding box. Transparent fill so
-    // it catches pointer events without obscuring the silhouette.
     const carHeightPx=(SIL.cArtBottom-SIL.cArtTop)*cScale;
     const carTopY=(gY-deckPx)-carHeightPx;
     const carLeftPx=bx(p.nd);
@@ -580,9 +596,7 @@ function draw(p){
   }
 
   // ── Cargo dots — sized by weight (sqrt scaling so area ≈ weight).
-  // Draw HEAVIEST FIRST so smaller dots render on top and stay clickable.
-  // posY (visual height above deck floor, in inches) lets the user spread
-  // overlapping items vertically; it does NOT affect TW calculation.
+  // Heaviest first so smaller dots render on top and stay clickable.
   const gearRadius=(wt)=>Math.min(30,Math.max(5,Math.sqrt(Math.max(0,wt))*1.98));
   const drawList=gear.filter(g=>document.getElementById('ck_'+g.id)?.checked).map(g=>{
     const wt=parseFloat(document.getElementById('wt_'+g.id)?.value)||0;
@@ -590,18 +604,18 @@ function draw(p){
   }).sort((a,b)=>b.wt-a.wt);
   drawList.forEach(({g,r})=>{
     const yOffset=(g.posY||0)*pxPerIn;
-    const cy=(gY-deckPx)-r-yOffset; // dot bottom rests on (deck + posY inches)
+    const cy=(gY-deckPx)-r-yOffset;
     const hl=(g.id===hoveredGearId)?' hl':'';
     h+=`<circle data-drag="gear" data-gear-id="${g.id}" class="${hl.trim()}" cx="${bx(g.pos).toFixed(1)}" cy="${cy.toFixed(1)}" r="${r.toFixed(1)}" fill="#f59e0b" opacity="0.9" stroke="#0f0f10" stroke-width="1.5"/>`;
   });
 
-  // ── Car CG marker — solid vertical down to deck, bold green label.
+  // ── Car CG marker ──
   const cCG=(p.cFA*fv('carFW')+p.cRA*fv('carRW'))/(fv('carFW')+fv('carRW'));
   const cgx=bx(cCG);
   h+=`<line x1="${cgx}" y1="${boxTopY+10}" x2="${cgx}" y2="${gY-deckPx}" stroke="#34d399" stroke-width="1.2" stroke-dasharray="3 2" opacity="0.85" pointer-events="none"/>`;
   h+=`<text x="${cgx+4}" y="${labelY}" text-anchor="start" font-size="9" font-weight="600" fill="#34d399" font-family="DM Sans,sans-serif" pointer-events="none">car CG</text>`;
 
-  // ── Nose gap annotation — bold orange to match cargo dots, at 2/3 box height ──
+  // ── Nose gap annotation ──
   if(p.nd>2){
     const n1=bx(0),n2=bx(p.nd),ny=labelY+4;
     h+=`<line x1="${n1}" y1="${ny}" x2="${n2}" y2="${ny}" stroke="#f59e0b" stroke-width="2" marker-end="url(#ar)" marker-start="url(#ar)" opacity="0.9" pointer-events="none"/>`;
@@ -609,7 +623,6 @@ function draw(p){
   }
 
   svg.innerHTML=h;
-  // Re-attach hover-link handlers to the freshly-rendered dots
   svg.querySelectorAll('[data-gear-id]').forEach(el=>{
     const id=el.dataset.gearId;
     el.addEventListener('mouseenter',()=>setGearHighlight(id));
@@ -618,11 +631,8 @@ function draw(p){
 }
 
 // ── Drag-to-position ─────────────────────────────────────────────
-// SVG event delegation. Both car (X only) and cargo (X and Y) draggable.
-// Touch and mouse supported. Coordinate conversion chain:
-//   client pixels → SVG viewBox units → real-world inches
 let dragState=null;
-const snap=v=>Math.round(v*2)/2; // 0.5" precision
+const snap=v=>Math.round(v*2)/2;
 
 function getEvtPoint(e){
   const t=e.touches?e.touches[0]:e;
@@ -636,10 +646,6 @@ function svgCoords(e){
     x:((clientX-rect.left)/rect.width)*680,
     y:((clientY-rect.top)/rect.height)*260
   };
-}
-// Convert SVG x-coordinate to inches from hitch
-function svgXtoInchesFromHitch(svgX){
-  return (svgX-viewState.xL)*viewState.span/(viewState.xR-viewState.xL);
 }
 
 function dragStart(e){
@@ -666,14 +672,12 @@ function dragMove(e){
   const {x,y}=svgCoords(e);
   const dx=x-dragState.startX;
   const dy=y-dragState.startY;
-  // Convert pixel deltas to inch deltas
   const dInchX=dx*viewState.span/(viewState.xR-viewState.xL);
-  const dInchY=-dy/viewState.pxPerIn; // SVG y grows downward; flip so positive = up
+  const dInchY=-dy/viewState.pxPerIn;
   if(dragState.type==='gear'){
     const g=gear.find(it=>it.id===dragState.id);
     if(!g)return;
     g.pos=Math.max(0,Math.min(viewState.bl,snap(dragState.startPos+dInchX)));
-    // Y range: 0 (on deck) up to box interior height ≈ 82"
     g.posY=Math.max(0,Math.min(82,snap(dragState.startPosY+dInchY)));
   }else if(dragState.type==='car'){
     const maxNd=Math.max(0,viewState.bl-viewState.carL-1);
@@ -705,7 +709,6 @@ function attachDragHandlers(){
 
 function wire(){
   document.querySelectorAll('input[type=number]').forEach(el=>el.addEventListener('input',()=>{calc();qsave();}));
-  // ESC closes the setup overlay
   document.addEventListener('keydown',e=>{
     if(e.key==='Escape'&&!document.getElementById('setup-overlay').hidden)closeSetup();
   });
@@ -715,7 +718,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   load();buildGear();wire();calc();
   loadSilhouettes();
   attachDragHandlers();
-  window.addEventListener('resize',setOff);
 });
 </script>
 </body>
